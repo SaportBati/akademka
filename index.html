@@ -509,7 +509,7 @@ async function renderReport(reportId){
         <div class="cell"><div class="lbl">Разделов</div><div class="val">${SUBSECTIONS.length}</div></div>
         <div class="cell"><div class="lbl">Ситуаций всего</div><div class="val">${totalSituations}</div></div>
         <div class="cell"><div class="lbl">Заполнено</div><div class="val">${SUBSECTIONS.filter(s=>(sit[s]||[]).length>0).length} / ${SUBSECTIONS.length}</div></div>
-        <div class="cell full"><div class="lbl">Действия</div><div class="val"><button class="btn danger" style="padding:5px 10px; font-size:11px;" data-action="delete-report">Удалить отчёт</button></div></div>
+        <div class="cell full"><div class="lbl">Действия</div><div class="val" style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn danger" style="padding:5px 10px; font-size:11px;" data-action="delete-report">Удалить отчёт</button><button class="btn solid" style="padding:5px 10px; font-size:11px;" data-action="copy-report">Копировать отчёт</button></div></div>
       </div>
     </div>
 
@@ -526,6 +526,13 @@ async function renderReport(reportId){
   `;
 
   bindNavHandlers();
+  
+  // Кнопка копирования отчета
+  const copyBtn = app.querySelector('[data-action="copy-report"]');
+  copyBtn.addEventListener('click', async () => {
+    await renderCopyReportView(reportId, report);
+  });
+  
   const delBtn = app.querySelector('[data-action="delete-report"]');
   delBtn.addEventListener('click', async () => {
     if(!confirm(`Удалить отчёт «${report.title}» и все его данные?`)) return;
@@ -543,6 +550,82 @@ function declineSituation(n){
   if(mod10 === 1) return 'ситуация';
   if(mod10 >= 2 && mod10 <= 4) return 'ситуации';
   return 'ситуаций';
+}
+
+// ---------- COPY REPORT VIEW ----------
+async function renderCopyReportView(reportId, report){
+  app.innerHTML = topbarHtml() + breadcrumbsHtml(report, null, 'Копирование отчёта') + `
+    <div class="form-page" style="max-width:900px;">
+      <div class="page-head">
+        <div>
+          <h1>Отчёт для копирования</h1>
+          <p>${escapeHtml(report.title)}</p>
+        </div>
+        <button class="btn solid" data-action="copy-to-clipboard">Копировать в буфер</button>
+      </div>
+      
+      <div class="form-card">
+        <div class="field">
+          <label>Сформированный отчёт</label>
+          <textarea id="report-output" rows="30" readonly></textarea>
+        </div>
+        
+        <div class="form-footer">
+          <button class="btn ghost" data-action="back-to-report">Назад к отчёту</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  bindNavHandlers();
+  
+  // Кнопка назад
+  app.querySelector('[data-action="back-to-report"]').addEventListener('click', () => {
+    nav({view:'report', id: reportId});
+  });
+  
+  // Кнопка копирования в буфер
+  app.querySelector('[data-action="copy-to-clipboard"]').addEventListener('click', async () => {
+    const textarea = app.querySelector('#report-output');
+    textarea.select();
+    try {
+      await navigator.clipboard.writeText(textarea.value);
+      showToast('Отчёт скопирован в буфер обмена');
+    } catch(e) {
+      showToast('Ошибка копирования');
+    }
+  });
+  
+  // Формируем текст отчёта
+  const sitData = await getSituations(reportId);
+  let reportText = '';
+  
+  for(const sub of SUBSECTIONS){
+    const list = (sitData[sub] || []).slice().sort((a,b)=>a.createdAt - b.createdAt);
+    if(list.length > 0){
+      reportText += `${sub}:\n`;
+      for(const s of list){
+        const vid = youtubeId(s.url);
+        let timecodeLink = '';
+        
+        // Проверяем, есть ли в описании временная ссылка (формат: https://youtu.be/...?t=XXX до MM:SS)
+        const tcMatch = s.description.match(/(https:\/\/youtu\.be\/[A-Za-z0-9_-]+\?t=\d+)\s+до\s+(\d+:\d+)/);
+        if(tcMatch){
+          timecodeLink = tcMatch[1];
+          const endTime = tcMatch[2];
+          // Извлекаем комментарий (всё что после "до MM:SS - ")
+          const commentPart = s.description.split(/до\s+\d+:\d+\s*-\s*/)[1] || '';
+          reportText += `${timecodeLink} до ${endTime} - ${commentPart}\n`;
+        } else {
+          // Если нет временной ссылки, используем обычную ссылку и описание
+          reportText += `${s.url} - ${s.description}\n`;
+        }
+      }
+      reportText += '\n';
+    }
+  }
+  
+  app.querySelector('#report-output').value = reportText.trim();
 }
 
 // ---------- SECTION (SITUATIONS) VIEW ----------
@@ -843,7 +926,7 @@ async function renderSituationForm(reportId, sub, sid){
   // Save Logic
   app.querySelector('[data-action="save-form"]').addEventListener('click', async () => {
     const url = urlInput.value.trim();
-    const desc = descArea.value.trim();
+    let desc = descArea.value.trim();
     let valid = true;
 
     if(!url || !youtubeId(url)){
@@ -861,6 +944,14 @@ async function renderSituationForm(reportId, sub, sid){
     }
 
     if(!valid) return;
+
+    // Если была выбрана временная ссылка, добавляем её в начало описания
+    const timecodeText = timecodeOutput.textContent.trim();
+    if(timecodeText && !desc.startsWith(timecodeText)){
+      // Добавляем временную ссылку в начало описания с датой видео
+      const videoDate = formatDate(Date.now());
+      desc = `${videoDate}: ${timecodeText} - ${desc}`;
+    }
 
     const data = await getSituations(reportId);
     if(!data[sub]) data[sub] = [];
