@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Реестр отчётов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#151a21;
+    --surface:#1c232c;
+    --surface-2:#242c37;
+    --paper:#f3efe4;
+    --paper-2:#eae4d3;
+    --ink:#e9e6dc;
+    --ink-dim:#a9b0bb;
+    --muted:#6f7a89;
+    --accent:#e0982f;
+    --accent-dim:#8a611f;
+    --accent-2:#4f8a8b;
+    --danger:#c1554d;
+    --border:#323c49;
+    --border-soft:#2a323d;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #1e2732 0%, transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+  }
+  ::selection{background:var(--accent); color:#1a1206;}
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  .display{font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.04em;}
+
+  /* ---------- shell ---------- */
+  .shell{max-width:1040px; margin:0 auto; padding:28px 24px 80px;}
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--border);
+    padding-bottom:18px; margin-bottom:28px;
+  }
+  .brand{display:flex; align-items:center; gap:14px;}
+  .brand-mark{
+    width:40px; height:40px; border:2px solid var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Oswald',sans-serif; font-weight:700; font-size:15px; color:var(--accent);
+  }
+  .brand-text .t1{font-size:11px; letter-spacing:0.18em; color:var(--muted); font-family:'IBM Plex Mono',monospace;}
+  .brand-text .t2{font-family:'Oswald',sans-serif; font-size:22px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; margin-top:2px;}
+
+  .breadcrumbs{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--muted); margin-bottom:18px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .breadcrumbs button{background:none;border:none;color:var(--ink-dim);padding:0;font-family:inherit;font-size:inherit;text-decoration:underline; text-underline-offset:3px; text-decoration-color:var(--border);}
+  .breadcrumbs button:hover{color:var(--accent);}
+  .breadcrumbs .sep{color:var(--border);}
+  .breadcrumbs .cur{color:var(--accent);}
+
+  .btn{
+    border:1px solid var(--accent); background:transparent; color:var(--accent);
+    padding:10px 18px; font-size:13px; font-weight:600; letter-spacing:0.03em;
+    display:inline-flex; align-items:center; gap:8px; transition:all .15s ease;
+    font-family:'IBM Plex Sans',sans-serif;
+  }
+  .btn:hover{background:var(--accent); color:#1a1206;}
+  .btn.solid{background:var(--accent); color:#1a1206;}
+  .btn.solid:hover{background:#f0a940;}
+  .btn.ghost{border-color:var(--border); color:var(--ink-dim);}
+  .btn.ghost:hover{border-color:var(--ink-dim); color:var(--ink); background:transparent;}
+  .btn.danger{border-color:var(--danger); color:var(--danger);}
+  .btn.danger:hover{background:var(--danger); color:#1c0d0b;}
+  .btn:disabled{opacity:0.45; cursor:not-allowed;}
+
+  /* ---------- registry table ---------- */
+  .page-head{display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:22px; gap:16px; flex-wrap:wrap;}
+  .page-head h1{font-family:'Oswald',sans-serif; font-size:28px; margin:0; text-transform:uppercase; letter-spacing:0.02em;}
+  .page-head p{margin:6px 0 0; color:var(--muted); font-size:13.5px;}
+
+  .registry{border:1px solid var(--border); background:var(--surface);}
+  .registry-row{
+    display:grid; grid-template-columns:70px 1fr 150px 170px 40px;
+    align-items:center; padding:14px 18px; border-bottom:1px solid var(--border-soft);
+    transition:background .12s ease; cursor:pointer;
+  }
+  .registry-row:last-child{border-bottom:none;}
+  .registry-row:hover{background:var(--surface-2);}
+  .registry-head{
+    display:grid; grid-template-columns:70px 1fr 150px 170px 40px;
+    padding:11px 18px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em;
+    color:var(--muted); border-bottom:1px solid var(--border); text-transform:uppercase;
+  }
+  .reg-num{font-family:'IBM Plex Mono',monospace; color:var(--accent); font-size:13px;}
+  .reg-title{font-weight:500; font-size:15px;}
+  .reg-date{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-dim);}
+  .reg-progress{display:flex; gap:3px;}
+  .dot{width:7px; height:7px; border-radius:50%; background:var(--border);}
+  .dot.filled{background:var(--accent-2);}
+  .reg-arrow{color:var(--muted); text-align:right; font-size:16px;}
+
+  .empty{
+    text-align:center; padding:70px 20px; color:var(--muted);
+    border:1px dashed var(--border);
+  }
+  .empty .display{font-size:18px; color:var(--ink-dim); margin-bottom:8px;}
+  .empty p{font-size:13.5px; max-width:360px; margin:0 auto 18px;}
+
+  /* ---------- title block (stamp) ---------- */
+  .titleblock-wrap{display:flex; gap:20px; align-items:stretch; margin-bottom:30px; flex-wrap:wrap;}
+  .titleblock{
+    flex:1; min-width:260px;
+    background:var(--paper); color:#20242a;
+    padding:22px 24px;
+    position:relative;
+    border:1px solid #cfc7ad;
+  }
+  .titleblock:before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--accent);
+  }
+  .titleblock .code{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.14em; color:#7a6f52; margin-bottom:6px;}
+  .titleblock h2{font-family:'Oswald',sans-serif; font-size:24px; margin:0; text-transform:uppercase; line-height:1.2;}
+  .stamp{
+    width:220px; border:1px solid var(--border); font-family:'IBM Plex Mono',monospace; font-size:11px;
+    display:grid; grid-template-columns:1fr 1fr;
+  }
+  .stamp .cell{padding:9px 10px; border-bottom:1px solid var(--border-soft); border-right:1px solid var(--border-soft);}
+  .stamp .cell:nth-child(2n){border-right:none;}
+  .stamp .lbl{color:var(--muted); font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:3px;}
+  .stamp .val{color:var(--ink);}
+  .stamp .full{grid-column:1 / -1;}
+
+  /* ---------- subsection grid ---------- */
+  .sub-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  @media(max-width:720px){.sub-grid{grid-template-columns:repeat(2,1fr);}}
+  .sub-card{
+    border:1px solid var(--border); background:var(--surface);
+    padding:20px 18px; cursor:pointer; transition:all .15s ease;
+    display:flex; flex-direction:column; gap:10px; min-height:110px;
+  }
+  .sub-card:hover{border-color:var(--accent); background:var(--surface-2); transform:translateY(-2px);}
+  .sub-card .code{font-family:'IBM Plex Mono',monospace; font-size:20px; color:var(--accent); font-weight:600;}
+  .sub-card .count{font-size:12.5px; color:var(--ink-dim); margin-top:auto;}
+  .sub-card .count b{color:var(--ink); font-weight:600;}
+
+  /* ---------- situations list ---------- */
+  .sit-list{display:flex; flex-direction:column; gap:14px;}
+  .sit-card{
+    border:1px solid var(--border); background:var(--surface);
+    display:grid; grid-template-columns:160px 1fr auto; gap:18px; padding:16px;
+    align-items:start;
+  }
+  @media(max-width:640px){.sit-card{grid-template-columns:1fr; }}
+  .sit-thumb{
+    width:160px; height:90px; background:#000 var(--surface-2) center/cover no-repeat;
+    border:1px solid var(--border-soft); flex-shrink:0; position:relative; display:block;
+  }
+  .sit-thumb .play{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:22px; text-shadow:0 1px 4px rgba(0,0,0,.6); opacity:.9;
+  }
+  .sit-body{min-width:0;}
+  .sit-meta{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); margin-bottom:6px;}
+  .sit-desc{font-size:14px; line-height:1.5; color:var(--ink-dim); white-space:pre-wrap; word-break:break-word;}
+  .sit-link{font-size:12px; color:var(--accent-2); word-break:break-all; display:block; margin-top:6px;}
+  .sit-actions{display:flex; flex-direction:column; gap:8px;}
+
+  /* ---------- toast & loading ---------- */
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:var(--accent); color:#1a1206; padding:11px 20px; font-size:13px; font-weight:600;
+    z-index:60; box-shadow:0 6px 20px rgba(0,0,0,.35);
+  }
+  .loading{padding:60px; text-align:center; color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:13px;}
+
+  .card-actions-row{display:flex; gap:6px;}
+  .icon-btn{
+    border:1px solid var(--border); background:transparent; color:var(--ink-dim);
+    width:30px; height:30px; display:flex; align-items:center; justify-content:center; font-size:13px;
+  }
+  .icon-btn:hover{border-color:var(--accent); color:var(--accent);}
+  .icon-btn.danger:hover{border-color:var(--danger); color:var(--danger);}
+
+  /* ---------- situation form (full page style) ---------- */
+  .form-page{max-width:700px;}
+  .form-page .page-head h1{font-size:24px;}
+  .form-card{border:1px solid var(--border); background:var(--surface); padding:26px;}
+  
+  .field{margin-bottom:20px;}
+  .field label{display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; color:var(--muted); text-transform:uppercase; margin-bottom:8px;}
+  .field input, .field textarea{
+    width:100%; background:var(--bg); border:1px solid var(--border); color:var(--ink);
+    padding:12px 14px; font-family:'IBM Plex Sans',sans-serif; font-size:14px; resize:vertical;
+  }
+  .field input:focus, .field textarea:focus{outline:none; border-color:var(--accent);}
+  .field .err{font-size:11.5px; color:var(--danger); margin-top:6px; display:none;}
+
+  /* Video Widget Styles */
+  .video-widget-wrap{margin-top:12px;}
+  .video-preview{
+    border:1px solid var(--border-soft); background:var(--surface-2);
+    aspect-ratio:16/9; width:100%; display:flex; align-items:center; justify-content:center;
+    overflow:hidden; position:relative;
+  }
+  .video-preview iframe{width:100%; height:100%; border:0; display:block;}
+  .video-preview .placeholder{
+    color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:12.5px; text-align:center;
+    padding:20px; display:flex; flex-direction:column; align-items:center; gap:8px;
+  }
+  .video-preview .placeholder .glyph{font-size:26px; color:var(--border);}
+  .video-status{font-family:'IBM Plex Mono',monospace; font-size:11px; margin-top:8px; display:flex; align-items:center; gap:6px;}
+  .video-status.ok{color:var(--accent-2);}
+  .video-status.bad{color:var(--danger);}
+
+  /* Timecode Button Styles */
+  .timecode-controls {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .btn-timecode {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 6px 12px;
+    border: 1px solid var(--accent-2);
+    color: var(--accent-2);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-timecode:hover {
+    background: rgba(79, 138, 139, 0.1);
+  }
+  .btn-timecode.active {
+    background: var(--accent-2);
+    color: #151a21;
+  }
+  .btn-timecode:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: var(--border);
+    color: var(--muted);
+  }
+  .tc-hint {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .form-footer{display:flex; justify-content:flex-end; gap:10px; margin-top:30px; padding-top:20px; border-top:1px solid var(--border-soft);}
+</style>
+</head>
+<body>
+<div class="shell" id="app">
+  <div class="loading">Загрузка реестра…</div>
+</div>
+
+<!-- Подключаем YouTube IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script>
+const SUBSECTIONS = ["7.1","7.2","7.3","7.4","7.5","7.6","7.8","7.9","7.10"];
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function escapeHtml(s){
+  return String(s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function formatDate(ts){
+  const d = new Date(ts);
+  return d.toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric'});
+}
+function youtubeId(url){
+  if(!url) return null;
+  const s = String(url).trim();
+  let m;
+  if((m = s.match(/[?&]v=([A-Za-z0-9_-]{6,})/))) return m[1];
+  if((m = s.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/))) return m[1];
+  if((m = s.match(/youtube(?:-nocookie)?\.com\/(?:embed|shorts|live|v)\/([A-Za-z0-9_-]{6,})/))) return m[1];
+  if(/^[A-Za-z0-9_-]{10,12}$/.test(s)) return s; 
+  return null;
+}
+
+// Форматирование секунд в MM:SS
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+// ---------- storage helpers ----------
+const LS_PREFIX = 'reestr_v2:'; 
+
+async function getReports(){
+  try{
+    const raw = localStorage.getItem(LS_PREFIX + 'reports');
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){ console.error('read failed', e); return []; }
+}
+async function setReports(list){
+  try{ localStorage.setItem(LS_PREFIX + 'reports', JSON.stringify(list)); }
+  catch(e){ console.error('write failed', e); showToast('Ошибка сохранения'); }
+}
+async function getSituations(reportId){
+  try{
+    const raw = localStorage.getItem(LS_PREFIX + 'situations:' + reportId);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){ console.error('read failed', e); return {}; }
+}
+async function setSituations(reportId, obj){
+  try{ localStorage.setItem(LS_PREFIX + 'situations:' + reportId, JSON.stringify(obj)); }
+  catch(e){ console.error('write failed', e); showToast('Ошибка сохранения'); }
+}
+async function deleteSituationsFor(reportId){
+  try{ localStorage.removeItem(LS_PREFIX + 'situations:' + reportId); }catch(e){}
+}
+
+// ---------- app state / routing ----------
+let route = {view:'list'};
+const app = document.getElementById('app');
+let ytPlayer = null; // Глобальная переменная для плеера
+
+function nav(r){
+  // При уходе со страницы формы уничтожаем плеер, чтобы не было конфликтов
+  if(ytPlayer && typeof ytPlayer.destroy === 'function'){
+    try { ytPlayer.destroy(); } catch(e){}
+    ytPlayer = null;
+  }
+  route = r; 
+  render(); 
+  window.scrollTo(0,0);
+}
+
+function showToast(msg){
+  const existing = document.querySelector('.toast');
+  if(existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2200);
+}
+
+function topbarHtml(){
+  return `
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">Р</div>
+        <div class="brand-text">
+          <div class="t1 mono">СИСТЕМА ФОРМИРОВАНИЯ ОТЧЁТОВ</div>
+          <div class="t2">Реестр отчётов</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function breadcrumbsHtml(report, sub, formLabel){
+  let parts = [`<button data-nav="list">Все отчёты</button>`];
+  if(report){
+    parts.push(`<span class="sep">/</span>`);
+    parts.push(sub ? `<button data-nav="report" data-id="${report.id}">${escapeHtml(report.title)}</button>` : `<span class="cur">${escapeHtml(report.title)}</span>`);
+  }
+  if(sub){
+    parts.push(`<span class="sep">/</span>`);
+    parts.push(formLabel ? `<button data-nav="section" data-id="${report.id}" data-sub="${sub}">Раздел ${sub}</button>` : `<span class="cur">Раздел ${sub}</span>`);
+  }
+  if(formLabel){
+    parts.push(`<span class="sep">/</span>`);
+    parts.push(`<span class="cur">${formLabel}</span>`);
+  }
+  return `<div class="breadcrumbs">${parts.join('')}</div>`;
+}
+
+// ---------- render dispatch ----------
+async function render(){
+  if(route.view === 'list') return renderList();
+  if(route.view === 'report') return renderReport(route.id);
+  if(route.view === 'section') return renderSection(route.id, route.sub);
+  if(route.view === 'situation-form') return renderSituationForm(route.id, route.sub, route.sid);
+}
+
+// ---------- LIST VIEW ----------
+async function renderList(){
+  app.innerHTML = topbarHtml() + `<div class="loading">Загрузка…</div>`;
+  const reports = await getReports();
+  reports.sort((a,b)=> b.createdAt - a.createdAt);
+
+  let rows = '';
+  if(reports.length === 0){
+    rows = `
+      <div class="empty">
+        <div class="display">Реестр пуст</div>
+        <p>Создайте первый отчёт — внутри появятся разделы 7.1–7.10.</p>
+        <button class="btn solid" data-action="new-report">+ Новый отчёт</button>
+      </div>`;
+  } else {
+    const situCounts = await Promise.all(reports.map(r => getSituations(r.id)));
+    rows = `
+      <div class="registry">
+        <div class="registry-head">
+          <div>№</div><div>Наименование отчёта</div><div>Создан</div><div>Заполненность</div><div></div>
+        </div>
+        ${reports.map((r,i) => {
+          const sit = situCounts[i];
+          const filled = SUBSECTIONS.filter(s => (sit[s]||[]).length > 0).length;
+          return `
+          <div class="registry-row" data-nav="report" data-id="${r.id}">
+            <div class="reg-num mono">${r.code}</div>
+            <div class="reg-title">${escapeHtml(r.title)}</div>
+            <div class="reg-date">${formatDate(r.createdAt)}</div>
+            <div class="reg-progress">${SUBSECTIONS.map(s => `<div class="dot ${((sit[s]||[]).length>0)?'filled':''}" title="${s}"></div>`).join('')}<span class="reg-date" style="margin-left:8px;">${filled}/${SUBSECTIONS.length}</span></div>
+            <div class="reg-arrow">›</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+  }
+
+  app.innerHTML = topbarHtml() + `
+    <div class="page-head">
+      <div>
+        <h1>Все отчёты</h1>
+        <p>Полный список сформированных отчётов реестра</p>
+      </div>
+      ${reports.length ? `<button class="btn solid" data-action="new-report">+ Новый отчёт</button>` : ''}
+    </div>
+    ${rows}
+  `;
+
+  bindNavHandlers();
+  const newBtn = app.querySelector('[data-action="new-report"]');
+  if(newBtn) newBtn.addEventListener('click', openNewReportModal);
+}
+
+function openNewReportModal(){
+  const overlay = document.createElement('div');
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(10,13,17,0.8);display:flex;align-items:center;justify-content:center;z-index:100;";
+  overlay.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);padding:26px;width:100%;max-width:400px;">
+      <h3 style="margin:0 0 18px;font-family:'Oswald';text-transform:uppercase;">Новый отчёт</h3>
+      <input type="text" id="rep-title" placeholder="Наименование отчёта" style="width:100%;padding:10px;margin-bottom:15px;background:var(--bg);border:1px solid var(--border);color:white;">
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
+        <button class="btn ghost" onclick="this.closest('div[style]').remove()">Отмена</button>
+        <button class="btn solid" id="save-rep-btn">Создать</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if(e.target === overlay) overlay.remove(); });
+  
+  const inp = overlay.querySelector('#rep-title');
+  inp.focus();
+  
+  overlay.querySelector('#save-rep-btn').onclick = async () => {
+    const title = inp.value.trim();
+    if(!title) return;
+    const reports = await getReports();
+    const code = String(reports.length + 1).padStart(3,'0');
+    const report = { id: uid(), code, title, createdAt: Date.now() };
+    reports.push(report);
+    await setReports(reports);
+    overlay.remove();
+    showToast('Отчёт создан');
+    nav({view:'report', id: report.id});
+  };
+}
+
+// ---------- REPORT VIEW ----------
+async function renderReport(reportId){
+  app.innerHTML = topbarHtml() + `<div class="loading">Загрузка отчёта…</div>`;
+  const reports = await getReports();
+  const report = reports.find(r => r.id === reportId);
+  if(!report){ nav({view:'list'}); return; }
+  const sit = await getSituations(reportId);
+  const totalSituations = SUBSECTIONS.reduce((sum,s) => sum + (sit[s]||[]).length, 0);
+
+  app.innerHTML = topbarHtml() + breadcrumbsHtml(report, null) + `
+    <div class="titleblock-wrap">
+      <div class="titleblock">
+        <div class="code mono">ОТЧЁТ № ${report.code}</div>
+        <h2>${escapeHtml(report.title)}</h2>
+      </div>
+      <div class="stamp">
+        <div class="cell"><div class="lbl">Дата создания</div><div class="val">${formatDate(report.createdAt)}</div></div>
+        <div class="cell"><div class="lbl">Разделов</div><div class="val">${SUBSECTIONS.length}</div></div>
+        <div class="cell"><div class="lbl">Ситуаций всего</div><div class="val">${totalSituations}</div></div>
+        <div class="cell"><div class="lbl">Заполнено</div><div class="val">${SUBSECTIONS.filter(s=>(sit[s]||[]).length>0).length} / ${SUBSECTIONS.length}</div></div>
+        <div class="cell full"><div class="lbl">Действия</div><div class="val"><button class="btn danger" style="padding:5px 10px; font-size:11px;" data-action="delete-report">Удалить отчёт</button></div></div>
+      </div>
+    </div>
+
+    <div class="sub-grid">
+      ${SUBSECTIONS.map(s => {
+        const n = (sit[s]||[]).length;
+        return `
+        <div class="sub-card" data-nav="section" data-id="${report.id}" data-sub="${s}">
+          <div class="code">${s}</div>
+          <div class="count">${n>0 ? `<b>${n}</b> ${declineSituation(n)}` : 'нет ситуаций'}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+
+  bindNavHandlers();
+  const delBtn = app.querySelector('[data-action="delete-report"]');
+  delBtn.addEventListener('click', async () => {
+    if(!confirm(`Удалить отчёт «${report.title}» и все его данные?`)) return;
+    const updated = (await getReports()).filter(r => r.id !== report.id);
+    await setReports(updated);
+    await deleteSituationsFor(report.id);
+    showToast('Отчёт удалён');
+    nav({view:'list'});
+  });
+}
+
+function declineSituation(n){
+  const mod100 = n % 100, mod10 = n % 10;
+  if(mod100 >= 11 && mod100 <= 14) return 'ситуаций';
+  if(mod10 === 1) return 'ситуация';
+  if(mod10 >= 2 && mod10 <= 4) return 'ситуации';
+  return 'ситуаций';
+}
+
+// ---------- SECTION (SITUATIONS) VIEW ----------
+async function renderSection(reportId, sub){
+  app.innerHTML = topbarHtml() + `<div class="loading">Загрузка раздела…</div>`;
+  const reports = await getReports();
+  const report = reports.find(r => r.id === reportId);
+  if(!report){ nav({view:'list'}); return; }
+  const sitData = await getSituations(reportId);
+  const list = (sitData[sub] || []).slice().sort((a,b)=>b.createdAt - a.createdAt);
+
+  const cards = list.length ? list.map(s => {
+    const yid = youtubeId(s.url);
+    const thumb = yid ? `https://img.youtube.com/vi/${yid}/hqdefault.jpg` : '';
+    return `
+    <div class="sit-card">
+      <a class="sit-thumb" style="${thumb ? `background-image:url('${thumb}')` : ''}" href="${escapeHtml(s.url)}" target="_blank" rel="noopener">
+        <span class="play">▶</span>
+      </a>
+      <div class="sit-body">
+        <div class="sit-meta">Добавлено ${formatDate(s.createdAt)}</div>
+        <div class="sit-desc">${escapeHtml(s.description)}</div>
+        <a class="sit-link" href="${escapeHtml(s.url)}" target="_blank" rel="noopener">${escapeHtml(s.url)}</a>
+      </div>
+      <div class="sit-actions">
+        <div class="card-actions-row">
+          <button class="icon-btn" title="Редактировать" data-action="edit-sit" data-sid="${s.id}">✎</button>
+          <button class="icon-btn danger" title="Удалить" data-action="del-sit" data-sid="${s.id}">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('') : `
+    <div class="empty">
+      <div class="display">В разделе ${sub} пока пусто</div>
+      <p>Добавьте первую ситуацию: укажите ссылку на видео на YouTube и опишите, что происходит.</p>
+      <button class="btn solid" data-action="new-sit">+ Добавить ситуацию</button>
+    </div>`;
+
+  app.innerHTML = topbarHtml() + breadcrumbsHtml(report, sub) + `
+    <div class="page-head">
+      <div>
+        <h1>Раздел ${sub}</h1>
+        <p>${escapeHtml(report.title)}</p>
+      </div>
+      ${list.length ? `<button class="btn solid" data-action="new-sit">+ Добавить ситуацию</button>` : ''}
+    </div>
+    <div class="sit-list">${cards}</div>
+  `;
+
+  bindNavHandlers();
+  const newBtn = app.querySelector('[data-action="new-sit"]');
+  if(newBtn) newBtn.addEventListener('click', () => nav({view:'situation-form', id: reportId, sub, sid: null}));
+
+  app.querySelectorAll('[data-action="edit-sit"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      nav({view:'situation-form', id: reportId, sub, sid: btn.dataset.sid});
+    });
+  });
+  app.querySelectorAll('[data-action="del-sit"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if(!confirm('Удалить эту ситуацию?')) return;
+      const data = await getSituations(reportId);
+      data[sub] = (data[sub]||[]).filter(s => s.id !== btn.dataset.sid);
+      await setSituations(reportId, data);
+      showToast('Ситуация удалена');
+      renderSection(reportId, sub);
+    });
+  });
+}
+
+// ---------- SITUATION FORM (FULL PAGE) ----------
+async function renderSituationForm(reportId, sub, sid){
+  app.innerHTML = topbarHtml() + `<div class="loading">Загрузка формы…</div>`;
+  
+  const reports = await getReports();
+  const report = reports.find(r => r.id === reportId);
+  if(!report){ nav({view:'list'}); return; }
+
+  let existing = null;
+  if(sid){
+    const allSits = await getSituations(reportId);
+    existing = (allSits[sub]||[]).find(s => s.id === sid);
+  }
+
+  const isEdit = !!existing;
+  const pageTitle = isEdit ? `Редактирование ситуации` : `Новая ситуация`;
+
+  app.innerHTML = topbarHtml() + breadcrumbsHtml(report, sub, pageTitle) + `
+    <div class="form-page">
+      <div class="page-head">
+        <div>
+          <h1>${pageTitle}</h1>
+          <p>Раздел ${sub} • ${escapeHtml(report.title)}</p>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="field">
+          <label>Ссылка на YouTube</label>
+          <input type="text" id="f-url" placeholder="https://www.youtube.com/watch?v=..." value="${isEdit ? escapeHtml(existing.url) : ''}">
+          <div class="err" id="f-url-err">Некорректная ссылка на YouTube</div>
+          
+          <!-- VIDEO WIDGET CONTAINER -->
+          <div class="video-widget-wrap">
+             <div id="video-container" class="video-preview">
+                <div class="placeholder">
+                  <div class="glyph">📺</div>
+                  <div>Вставьте ссылку выше,<br>чтобы увидеть превью</div>
+                </div>
+             </div>
+             <div id="video-status" class="video-status" style="display:none;"></div>
+             
+             <!-- TIMECODE BUTTON -->
+             <div class="timecode-controls" id="tc-controls" style="display:none;">
+               <button type="button" id="btn-timecode" class="btn-timecode">
+                 <span>⏱</span> Начиная с...
+               </button>
+               <span class="tc-hint" id="tc-hint"></span>
+             </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Описание ситуации</label>
+          <textarea id="f-desc" rows="8" placeholder="Опишите, что происходит на видео...">${isEdit ? escapeHtml(existing.description) : ''}</textarea>
+          <div class="err" id="f-desc-err">Введите описание</div>
+        </div>
+
+        <div class="form-footer">
+          <button class="btn ghost" data-action="cancel-form">Отмена</button>
+          <button class="btn solid" data-action="save-form">${isEdit ? 'Сохранить изменения' : 'Добавить ситуацию'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  bindNavHandlers();
+  
+  // Cancel button logic
+  app.querySelector('[data-action="cancel-form"]').addEventListener('click', () => {
+    nav({view:'section', id: reportId, sub: sub});
+  });
+
+  // --- Video Widget Logic with Timecode Support ---
+  const urlInput = app.querySelector('#f-url');
+  const videoContainer = app.querySelector('#video-container');
+  const videoStatus = app.querySelector('#video-status');
+  const tcControls = app.querySelector('#tc-controls');
+  const btnTimecode = app.querySelector('#btn-timecode');
+  const tcHint = app.querySelector('#tc-hint');
+  const descArea = app.querySelector('#f-desc');
+
+  // State for timecode selection
+  let startTime = null;
+  let isSelectingRange = false;
+
+  function resetTimecodeButton() {
+    startTime = null;
+    isSelectingRange = false;
+    btnTimecode.innerHTML = '<span>⏱</span> Начиная с...';
+    btnTimecode.classList.remove('active');
+    tcHint.textContent = '';
+  }
+
+  // Обработчик кнопки таймкода
+  btnTimecode.addEventListener('click', () => {
+    if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') {
+      showToast('Плеер еще не готов');
+      return;
+    }
+
+    const currentTime = ytPlayer.getCurrentTime();
+    const formatted = formatTime(currentTime);
+
+    if (!isSelectingRange) {
+      // Первое нажатие: фиксируем начало
+      startTime = currentTime;
+      isSelectingRange = true;
+      btnTimecode.innerHTML = `<span>⏱</span> До (${formatted})...`;
+      btnTimecode.classList.add('active');
+      tcHint.textContent = `Начало: ${formatted}. Нажмите снова для конца.`;
+    } else {
+      // Второе нажатие: фиксируем конец и вставляем текст
+      const endTime = currentTime;
+      const startStr = formatTime(startTime);
+      const endStr = formatTime(endTime);
+      
+      const insertText = `[Начиная с ${startStr} до ${endStr}] `;
+      
+      // Вставка в textarea
+      const startPos = descArea.selectionStart;
+      const endPos = descArea.selectionEnd;
+      const textBefore = descArea.value.substring(0, startPos);
+      const textAfter = descArea.value.substring(endPos);
+      
+      descArea.value = textBefore + insertText + textAfter;
+      descArea.focus();
+      descArea.selectionStart = descArea.selectionEnd = startPos + insertText.length;
+
+      // Сброс кнопки
+      resetTimecodeButton();
+      showToast('Таймкод добавлен');
+    }
+  });
+
+  function mountYouTubeEmbed(vid){
+    // Очищаем контейнер
+    videoContainer.innerHTML = '<div id="yt-player-target"></div>';
+    
+    // Показываем контролы таймкода
+    tcControls.style.display = 'flex';
+    resetTimecodeButton();
+
+    videoStatus.style.display = 'flex';
+    videoStatus.className = 'video-status ok';
+    videoStatus.innerHTML = `Видео ID: ${vid} — <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener" style="color:inherit;">открыть на YouTube ↗</a>`;
+
+    // Создаем или пересоздаем плеер
+    // Важно: YT.Player требует существующий DOM элемент
+    if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
+      videoStatus.className = 'video-status bad';
+      videoStatus.textContent = 'YouTube API не загружен (проверьте блокировщики)';
+      tcControls.style.display = 'none';
+      return;
+    }
+
+    try {
+      if(ytPlayer) {
+        try{ ytPlayer.destroy(); }catch(e){}
+      }
+      
+      ytPlayer = new YT.Player('yt-player-target', {
+        height: '100%',
+        width: '100%',
+        videoId: vid,
+        playerVars: {
+          'playsinline': 1,
+          'modestbranding': 1,
+          'rel': 0
+        },
+        events: {
+          'onReady': function(event) {
+            // Плеер готов, кнопка активна
+            btnTimecode.disabled = false;
+          },
+          'onError': function(event) {
+             console.warn('YT Error', event.data);
+             // Ошибки могут возникать даже при рабочем видео в некоторых окружениях,
+             // поэтому не скрываем кнопку сразу, но можно добавить лог.
+          }
+        }
+      });
+    } catch(e) {
+      console.error("YT Init Error", e);
+      videoStatus.className = 'video-status bad';
+      videoStatus.textContent = 'Ошибка инициализации плеера';
+      tcControls.style.display = 'none';
+    }
+  }
+
+  function updateVideoWidget(urlVal){
+    const vid = youtubeId(urlVal);
+    if(vid){
+      mountYouTubeEmbed(vid);
+      app.querySelector('#f-url-err').style.display = 'none';
+    } else {
+      // Сброс если URL невалидный
+      if(ytPlayer && typeof ytPlayer.destroy === 'function'){
+         try{ ytPlayer.destroy(); }catch(e){}
+         ytPlayer = null;
+      }
+      tcControls.style.display = 'none';
+      
+      if(urlVal.trim().length > 5){
+         videoContainer.innerHTML = `<div class="placeholder"><div class="glyph">⚠️</div><div>Не удалось распознать видео</div></div>`;
+         videoStatus.style.display = 'flex';
+         videoStatus.className = 'video-status bad';
+         videoStatus.textContent = 'Проверьте формат ссылки';
+      } else {
+         videoContainer.innerHTML = `<div class="placeholder"><div class="glyph">📺</div><div>Вставьте ссылку выше,<br>чтобы увидеть превью</div></div>`;
+         videoStatus.style.display = 'none';
+      }
+    }
+  }
+
+  // Initial check if editing
+  if(isEdit && existing.url) updateVideoWidget(existing.url);
+
+  // Listen for input changes
+  urlInput.addEventListener('input', (e) => {
+    updateVideoWidget(e.target.value);
+  });
+
+  // Save Logic
+  app.querySelector('[data-action="save-form"]').addEventListener('click', async () => {
+    const url = urlInput.value.trim();
+    const desc = descArea.value.trim();
+    let valid = true;
+
+    if(!url || !youtubeId(url)){
+      app.querySelector('#f-url-err').style.display = 'block';
+      valid = false;
+    } else {
+      app.querySelector('#f-url-err').style.display = 'none';
+    }
+
+    if(!desc){
+      app.querySelector('#f-desc-err').style.display = 'block';
+      valid = false;
+    } else {
+      app.querySelector('#f-desc-err').style.display = 'none';
+    }
+
+    if(!valid) return;
+
+    const data = await getSituations(reportId);
+    if(!data[sub]) data[sub] = [];
+
+    if(isEdit){
+      const idx = data[sub].findIndex(s => s.id === existing.id);
+      if(idx > -1) data[sub][idx] = {...existing, url, description: desc};
+    } else {
+      data[sub].push({ id: uid(), url, description: desc, createdAt: Date.now() });
+    }
+
+    await setSituations(reportId, data);
+    showToast(isEdit ? 'Изменения сохранены' : 'Ситуация добавлена');
+    nav({view:'section', id: reportId, sub: sub});
+  });
+}
+
+// ---------- shared nav binder ----------
+function bindNavHandlers(){
+  app.querySelectorAll('[data-nav]').forEach(el => {
+    el.addEventListener('click', () => {
+      const view = el.dataset.nav;
+      if(view === 'list') nav({view:'list'});
+      else if(view === 'report') nav({view:'report', id: el.dataset.id});
+      else if(view === 'section') nav({view:'section', id: el.dataset.id, sub: el.dataset.sub});
+    });
+  });
+}
+
+render();
+</script>
+</body>
+</html>
