@@ -715,9 +715,10 @@ async function renderSituationForm(reportId, sub, sid){
       const endTime = currentTime;
       const startSeconds = Math.floor(startTime);
       const endSeconds = Math.floor(endTime);
+      const endFormatted = formatTime(endSeconds);
       
-      // Формируем ссылку с параметрами времени
-      const videoUrl = `https://youtu.be/${currentVideoId}?start=${startSeconds}&end=${endSeconds}`;
+      // Формируем ссылку с параметром времени начала и текстом конца
+      const videoUrl = `https://youtu.be/${currentVideoId}?t=${startSeconds} до ${endFormatted}`;
       
       // Вставка в textarea
       const startPos = descArea.selectionStart;
