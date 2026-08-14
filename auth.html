@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вход / Регистрация</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#11161d;
+    --bg-grid:rgba(143,166,196,0.05);
+    --surface:#171e27;
+    --surface-2:#1e2731;
+    --surface-3:#232d38;
+    --paper:#ece6d3;
+    --paper-2:#e2dac2;
+    --paper-ink:#241f16;
+    --ink:#e8e3d3;
+    --ink-dim:#a3aebc;
+    --muted:#5c6674;
+    --accent:#4f86b8;
+    --accent-dim:#33587c;
+    --accent-glow:rgba(79,134,184,0.35);
+    --accent-2:#b08d52;
+    --accent-2-glow:rgba(176,141,82,0.35);
+    --danger:#af3b30;
+    --danger-glow:rgba(175,59,48,0.35);
+    --border:#2a3441;
+    --border-soft:#212a35;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:
+      repeating-linear-gradient(0deg, var(--bg-grid) 0 1px, transparent 1px 96px),
+      repeating-linear-gradient(90deg, var(--bg-grid) 0 1px, transparent 1px 96px),
+      radial-gradient(1100px 550px at 8% -8%, #1a222d 0%, transparent 55%),
+      radial-gradient(700px 380px at 92% 6%, rgba(79,134,184,0.06) 0%, transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'PT Sans', sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .auth-container{
+    width:100%;
+    max-width:420px;
+    padding:24px;
+  }
+  .auth-card{
+    border:1px solid var(--border);
+    background:var(--surface);
+    padding:32px 28px;
+    position:relative;
+  }
+  .auth-card::before{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(135deg, rgba(79,134,184,0.08) 0%, transparent 55%);
+    pointer-events:none;
+  }
+  .auth-card::after{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--accent);
+    box-shadow:0 0 12px var(--accent-glow);
+  }
+  .brand{
+    text-align:center;
+    margin-bottom:28px;
+  }
+  .brand-mark{
+    width:52px; height:52px; margin:0 auto 12px;
+    border:2px solid var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Oswald',sans-serif; font-weight:700; font-size:20px; color:var(--accent);
+    box-shadow:0 0 16px var(--accent-glow);
+  }
+  .brand h1{
+    font-family:'Oswald',sans-serif;
+    font-size:20px;
+    margin:0;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+    color:var(--ink);
+  }
+  .brand p{
+    font-family:'PT Mono',monospace;
+    font-size:11px;
+    color:var(--muted);
+    margin:6px 0 0;
+    letter-spacing:0.08em;
+  }
+  .tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:24px;
+    border-bottom:1px solid var(--border);
+    padding-bottom:0;
+  }
+  .tab-btn{
+    flex:1;
+    background:transparent;
+    border:none;
+    border-bottom:2px solid transparent;
+    color:var(--ink-dim);
+    padding:12px 16px;
+    font-family:'PT Sans',sans-serif;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .2s ease;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+  .tab-btn:hover{
+    color:var(--ink);
+    background:var(--surface-2);
+  }
+  .tab-btn.active{
+    color:var(--accent);
+    border-bottom-color:var(--accent);
+  }
+  .field{
+    margin-bottom:18px;
+  }
+  .field label{
+    display:block;
+    font-family:'PT Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    color:var(--muted);
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .field input{
+    width:100%;
+    background:var(--bg);
+    border:1px solid var(--border);
+    color:var(--ink);
+    padding:12px 14px;
+    font-family:'PT Sans',sans-serif;
+    font-size:14px;
+    transition:all .2s ease;
+  }
+  .field input:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 12px var(--accent-glow);
+  }
+  .field .err{
+    font-size:11px;
+    color:var(--danger);
+    margin-top:6px;
+    display:none;
+  }
+  .btn{
+    width:100%;
+    border:1px solid var(--accent);
+    background:transparent;
+    color:var(--accent);
+    padding:12px 18px;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:0.03em;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:all .2s ease;
+    font-family:'PT Sans',sans-serif;
+    cursor:pointer;
+    text-transform:uppercase;
+  }
+  .btn:hover{
+    background:var(--accent);
+    color:#0c1116;
+    box-shadow:0 0 16px var(--accent-glow);
+  }
+  .btn.solid{
+    background:var(--accent);
+    color:#0c1116;
+  }
+  .btn.solid:hover{
+    background:#6a9cc8;
+    box-shadow:0 0 20px var(--accent-glow);
+  }
+  .btn:disabled{
+    opacity:0.45;
+    cursor:not-allowed;
+  }
+  .message{
+    padding:10px 14px;
+    border-radius:3px;
+    font-size:13px;
+    margin-bottom:18px;
+    display:none;
+  }
+  .message.error{
+    background:rgba(175,59,48,0.15);
+    border:1px solid var(--danger);
+    color:#ffb4a8;
+    display:block;
+  }
+  .message.success{
+    background:rgba(79,134,184,0.15);
+    border:1px solid var(--accent);
+    color:#a8d4ff;
+    display:block;
+  }
+  .form-section{
+    display:none;
+  }
+  .form-section.active{
+    display:block;
+  }
+  .divider{
+    height:1px;
+    background:var(--border);
+    margin:20px 0;
+  }
+  .link-btn{
+    background:none;
+    border:none;
+    color:var(--accent);
+    font-family:inherit;
+    font-size:13px;
+    cursor:pointer;
+    text-decoration:underline;
+    text-underline-offset:3px;
+  }
+  .link-btn:hover{
+    color:var(--accent-2);
+  }
+</style>
+</head>
+<body>
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="brand">
+      <div class="brand-mark">Р</div>
+      <h1>Реестр отчётов</h1>
+      <p>СИСТЕМА ФОРМИРОВАНИЯ ОТЧЁТОВ</p>
+    </div>
+    
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="login">Вход</button>
+      <button class="tab-btn" data-tab="register">Регистрация</button>
+    </div>
+    
+    <div id="message" class="message"></div>
+    
+    <!-- Login Form -->
+    <form id="login-form" class="form-section active">
+      <div class="field">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" required placeholder="your@email.com">
+        <div class="err" id="login-email-err"></div>
+      </div>
+      <div class="field">
+        <label for="login-password">Пароль</label>
+        <input type="password" id="login-password" required placeholder="••••••••">
+        <div class="err" id="login-password-err"></div>
+      </div>
+      <button type="submit" class="btn solid">Войти</button>
+    </form>
+    
+    <!-- Register Form -->
+    <form id="register-form" class="form-section">
+      <div class="field">
+        <label for="reg-name">Имя (необязательно)</label>
+        <input type="text" id="reg-name" placeholder="Иван Иванов">
+      </div>
+      <div class="field">
+        <label for="reg-email">Email</label>
+        <input type="email" id="reg-email" required placeholder="your@email.com">
+        <div class="err" id="reg-email-err"></div>
+      </div>
+      <div class="field">
+        <label for="reg-password">Пароль</label>
+        <input type="password" id="reg-password" required placeholder="минимум 6 символов" minlength="6">
+        <div class="err" id="reg-password-err"></div>
+      </div>
+      <div class="field">
+        <label for="reg-confirm">Подтверждение пароля</label>
+        <input type="password" id="reg-confirm" required placeholder="повторите пароль">
+        <div class="err" id="reg-confirm-err"></div>
+      </div>
+      <button type="submit" class="btn solid">Зарегистрироваться</button>
+    </form>
+    
+    <div class="divider"></div>
+    
+    <div style="text-align:center;">
+      <button class="link-btn" onclick="window.location.href='/'">← Вернуться к списку отчётов</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = '';
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab + '-form').classList.add('active');
+    hideMessage();
+  });
+});
+
+function showMessage(text, type){
+  const msg = document.getElementById('message');
+  msg.textContent = text;
+  msg.className = 'message ' + type;
+}
+
+function hideMessage(){
+  document.getElementById('message').className = 'message';
+  document.getElementById('message').textContent = '';
+}
+
+function clearErrors(){
+  document.querySelectorAll('.err').forEach(e => {
+    e.textContent = '';
+    e.style.display = 'none';
+  });
+}
+
+// Login
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearErrors();
+  
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const password = document.getElementById('login-password').value;
+  
+  if(!email){
+    document.getElementById('login-email-err').textContent = 'Введите email';
+    document.getElementById('login-email-err').style.display = 'block';
+    return;
+  }
+  
+  if(!password){
+    document.getElementById('login-password-err').textContent = 'Введите пароль';
+    document.getElementById('login-password-err').style.display = 'block';
+    return;
+  }
+  
+  try{
+    const res = await fetch(API_BASE + '/api/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email, password})
+    });
+    
+    const data = await res.json();
+    
+    if(!res.ok){
+      showMessage(data.error || 'Ошибка входа', 'error');
+      return;
+    }
+    
+    localStorage.setItem('auth_token', data.token);
+    localStorage.setItem('auth_user', JSON.stringify(data.user));
+    showMessage('Вход выполнен! Перенаправление...', 'success');
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 1000);
+  }catch(err){
+    showMessage('Ошибка соединения с сервером', 'error');
+  }
+});
+
+// Register
+document.getElementById('register-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearErrors();
+  
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const password = document.getElementById('reg-password').value;
+  const confirm = document.getElementById('reg-confirm').value;
+  
+  let valid = true;
+  
+  if(!email){
+    document.getElementById('reg-email-err').textContent = 'Введите email';
+    document.getElementById('reg-email-err').style.display = 'block';
+    valid = false;
+  }
+  
+  if(password.length < 6){
+    document.getElementById('reg-password-err').textContent = 'Пароль должен быть не менее 6 символов';
+    document.getElementById('reg-password-err').style.display = 'block';
+    valid = false;
+  }
+  
+  if(password !== confirm){
+    document.getElementById('reg-confirm-err').textContent = 'Пароли не совпадают';
+    document.getElementById('reg-confirm-err').style.display = 'block';
+    valid = false;
+  }
+  
+  if(!valid) return;
+  
+  try{
+    const res = await fetch(API_BASE + '/api/register', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email, password, name})
+    });
+    
+    const data = await res.json();
+    
+    if(!res.ok){
+      showMessage(data.error || 'Ошибка регистрации', 'error');
+      return;
+    }
+    
+    showMessage('Регистрация успешна! Теперь войдите.', 'success');
+    setTimeout(() => {
+      document.querySelector('[data-tab="login"]').click();
+    }, 1500);
+  }catch(err){
+    showMessage('Ошибка соединения с сервером', 'error');
+  }
+});
+
+// Check if already logged in
+(function checkAuth(){
+  const token = localStorage.getItem('auth_token');
+  if(token){
+    // Could validate token here
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+name = "registry-app"
+main = "src/worker.js"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "registry-db"
+database_id = "YOUR_DATABASE_ID_HERE"
+
+[vars]
+JWT_SECRET = "your-secret-key-change-in-production"
+
+[[assets]]
+directory = "."
+binding = "ASSETS"
