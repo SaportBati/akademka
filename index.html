@@ -1494,6 +1494,193 @@ async function renderSituationForm(reportId, sub, sid){
     loadVideos();
   }
   
+  // Функция загрузки видео по ID канала
+  async function loadVideosByChannel(channelId){
+    if(!YT_API_KEY){
+      alert('Сначала введите API ключ');
+      return;
+    }
+    
+    body.innerHTML = '<div class="loading-spinner"></div>';
+    statusEl.textContent = 'Загрузка...';
+    
+    try {
+      // Определяем тип ID канала
+      let url;
+      if(channelId.startsWith('UC') || channelId.startsWith('HC')){
+        // Это ID канала
+        url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${encodeURIComponent(channelId)}&type=video&order=date&maxResults=12&key=${encodeURIComponent(YT_API_KEY)}`;
+      } else {
+        // Это может быть имя пользователя или псевдоним, используем поиск
+        url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(channelId)}&type=video&order=date&maxResults=12&key=${encodeURIComponent(YT_API_KEY)}`;
+      }
+      
+      const response = await fetch(url);
+      
+      if(!response.ok){
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || `Ошибка API: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if(!data.items || data.items.length === 0){
+        body.innerHTML = `
+          <div class="yt-error" style="text-align:center;padding:40px;">
+            <div style="font-size:48px;margin-bottom:16px;">🔍</div>
+            <p style="font-size:16px;margin-bottom:8px;">Видео не найдены</p>
+            <p style="font-size:13px;color:var(--muted);">Попробуйте ввести другой ID канала или проверьте правильность ввода</p>
+            <button id="yt-retry-channel" class="btn ghost" style="margin-top:16px;">Попробовать снова</button>
+          </div>
+        `;
+        document.getElementById('yt-retry-channel')?.addEventListener('click', () => {
+          openYouTubePicker();
+        });
+        statusEl.textContent = 'Нет видео';
+        return;
+      }
+      
+      statusEl.textContent = `Загружено: ${data.items.length} видео`;
+      statusEl.classList.add('connected');
+      
+      // Отображаем видео
+      let html = '<div class="yt-videos-grid">';
+      data.items.forEach((item, index) => {
+        const videoId = item.id.videoId;
+        const title = item.snippet.title;
+        const thumb = item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '';
+        const published = new Date(item.snippet.publishedAt).toLocaleDateString('ru-RU');
+        
+        html += `
+          <div class="yt-video-card" data-video-id="${videoId}" data-url="https://www.youtube.com/watch?v=${videoId}" style="animation-delay:${index * 0.05}s">
+            <div class="yt-video-thumb" style="background-image:url('${escapeHtml(thumb)}')"></div>
+            <div class="yt-video-info">
+              <h4 class="yt-video-title">${escapeHtml(title)}</h4>
+              <div class="yt-video-meta">${published}</div>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      
+      // Добавляем пагинацию если есть следующая страница
+      if(data.nextPageToken){
+        html += `<div style="text-align:center;margin-top:24px;"><button class="btn ghost" id="yt-load-more-channel">Загрузить ещё</button></div>`;
+      }
+      
+      body.innerHTML = html;
+      
+      // Обработчик выбора видео
+      body.querySelectorAll('.yt-video-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const videoUrl = card.dataset.url;
+          urlInput.value = videoUrl;
+          updateVideoWidget(videoUrl);
+          overlay.remove();
+          showToast('Видео выбрано');
+        });
+      });
+      
+      // Обработчик загрузки следующей страницы
+      const loadMoreBtn = body.querySelector('#yt-load-more-channel');
+      if(loadMoreBtn){
+        loadMoreBtn.addEventListener('click', () => {
+          loadMoreChannelVideos(channelId, data.nextPageToken);
+        });
+      }
+      
+    } catch(error){
+      console.error('YouTube Channel API Error:', error);
+      body.innerHTML = `
+        <div class="yt-error" style="text-align:center;padding:40px;">
+          <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+          <p style="font-size:16px;margin-bottom:8px;">Ошибка загрузки</p>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">${escapeHtml(error.message)}</p>
+          <button id="yt-retry-channel-err" class="btn ghost" style="padding:10px 20px;">Попробовать снова</button>
+        </div>
+      `;
+      document.getElementById('yt-retry-channel-err')?.addEventListener('click', () => {
+        openYouTubePicker();
+      });
+      statusEl.textContent = 'Ошибка';
+    }
+  }
+  
+  // Функция загрузки следующей страницы видео канала
+  async function loadMoreChannelVideos(channelId, pageToken){
+    if(!YT_API_KEY) return;
+    
+    body.innerHTML = '<div class="loading-spinner"></div>';
+    
+    try {
+      let url;
+      if(channelId.startsWith('UC') || channelId.startsWith('HC')){
+        url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${encodeURIComponent(channelId)}&type=video&order=date&maxResults=12&pageToken=${encodeURIComponent(pageToken)}&key=${encodeURIComponent(YT_API_KEY)}`;
+      } else {
+        url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(channelId)}&type=video&order=date&maxResults=12&pageToken=${encodeURIComponent(pageToken)}&key=${encodeURIComponent(YT_API_KEY)}`;
+      }
+      
+      const response = await fetch(url);
+      if(!response.ok) throw new Error(`Ошибка API: ${response.status}`);
+      
+      const data = await response.json();
+      
+      if(!data.items || data.items.length === 0){
+        body.innerHTML = '<div class="yt-error" style="text-align:center;padding:20px;">Больше видео не найдено</div>';
+        return;
+      }
+      
+      // Отображаем видео
+      let html = '<div class="yt-videos-grid">';
+      data.items.forEach((item, index) => {
+        const videoId = item.id.videoId;
+        const title = item.snippet.title;
+        const thumb = item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '';
+        const published = new Date(item.snippet.publishedAt).toLocaleDateString('ru-RU');
+        
+        html += `
+          <div class="yt-video-card" data-video-id="${videoId}" data-url="https://www.youtube.com/watch?v=${videoId}" style="animation-delay:${index * 0.05}s">
+            <div class="yt-video-thumb" style="background-image:url('${escapeHtml(thumb)}')"></div>
+            <div class="yt-video-info">
+              <h4 class="yt-video-title">${escapeHtml(title)}</h4>
+              <div class="yt-video-meta">${published}</div>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      
+      // Добавляем пагинацию если есть следующая страница
+      if(data.nextPageToken){
+        html += `<div style="text-align:center;margin-top:24px;"><button class="btn ghost" id="yt-load-more-channel-next">Загрузить ещё</button></div>`;
+      }
+      
+      body.innerHTML = html;
+      
+      // Обработчик выбора видео
+      body.querySelectorAll('.yt-video-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const videoUrl = card.dataset.url;
+          urlInput.value = videoUrl;
+          updateVideoWidget(videoUrl);
+          overlay.remove();
+          showToast('Видео выбрано');
+        });
+      });
+      
+      // Обработчик загрузки следующей страницы
+      const loadMoreBtn = body.querySelector('#yt-load-more-channel-next');
+      if(loadMoreBtn){
+        loadMoreBtn.addEventListener('click', () => {
+          loadMoreChannelVideos(channelId, data.nextPageToken);
+        });
+      }
+      
+    } catch(error){
+      body.innerHTML = `<div class="yt-error" style="text-align:center;padding:20px;color:var(--error);">Ошибка: ${escapeHtml(error.message)}</div>`;
+    }
+  }
+  
   // Обработчик кнопки выбора видео
   btnYtPicker.addEventListener('click', openYouTubePicker);
 
