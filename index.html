@@ -217,25 +217,29 @@
   .video-status.ok{color:var(--accent-2);}
   .video-status.bad{color:var(--danger);}
 
-  /* Timecode Button Styles */
+  /* Timecode Button Styles - Full Width */
   .timecode-controls {
     margin-top: 10px;
     display: flex;
     gap: 10px;
     align-items: center;
+    width: 100%;
   }
   .btn-timecode {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
-    padding: 6px 12px;
+    padding: 8px 16px;
     border: 1px solid var(--accent-2);
     color: var(--accent-2);
     background: transparent;
     cursor: pointer;
     transition: all 0.2s;
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
+    flex: 1;
+    width: 100%;
   }
   .btn-timecode:hover {
     background: rgba(79, 138, 139, 0.1);
@@ -254,6 +258,18 @@
     font-size: 11px;
     color: var(--muted);
     font-family: 'IBM Plex Mono', monospace;
+    display: none;
+  }
+  .timecode-output {
+    margin-top: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-2);
+    word-break: break-all;
+    display: none;
+  }
+  .timecode-output.visible {
+    display: block;
   }
 
   .form-footer{display:flex; justify-content:flex-end; gap:10px; margin-top:30px; padding-top:20px; border-top:1px solid var(--border-soft);}
@@ -641,11 +657,11 @@ async function renderSituationForm(reportId, sub, sid){
              
              <!-- TIMECODE BUTTON -->
              <div class="timecode-controls" id="tc-controls" style="display:none;">
-               <button type="button" id="btn-timecode" class="btn-timecode">
-                 <span>⏱</span> Начиная с...
+               <button type="button" id="btn-timecode" class="btn-timecode" disabled>
+                 <span>⏱</span> Выбрать временной диапазон
                </button>
-               <span class="tc-hint" id="tc-hint"></span>
              </div>
+             <div class="timecode-output" id="timecode-output"></div>
           </div>
         </div>
 
@@ -676,7 +692,7 @@ async function renderSituationForm(reportId, sub, sid){
   const videoStatus = app.querySelector('#video-status');
   const tcControls = app.querySelector('#tc-controls');
   const btnTimecode = app.querySelector('#btn-timecode');
-  const tcHint = app.querySelector('#tc-hint');
+  const timecodeOutput = app.querySelector('#timecode-output');
   const descArea = app.querySelector('#f-desc');
 
   // State for timecode selection
@@ -687,10 +703,11 @@ async function renderSituationForm(reportId, sub, sid){
   function resetTimecodeButton() {
     startTime = null;
     isSelectingRange = false;
-    currentVideoId = null;
-    btnTimecode.innerHTML = '<span>⏱</span> Начиная с...';
+    btnTimecode.innerHTML = '<span>⏱</span> Выбрать временной диапазон';
     btnTimecode.classList.remove('active');
-    tcHint.textContent = '';
+    btnTimecode.disabled = false;
+    timecodeOutput.classList.remove('visible');
+    timecodeOutput.textContent = '';
   }
 
   // Обработчик кнопки таймкода
@@ -707,32 +724,27 @@ async function renderSituationForm(reportId, sub, sid){
       // Первое нажатие: фиксируем начало
       startTime = currentTime;
       isSelectingRange = true;
-      btnTimecode.innerHTML = `<span>⏱</span> До (${formatted})...`;
+      btnTimecode.innerHTML = `<span>⏱</span> Зафиксировано начало: ${formatted}. Нажмите для завершения`;
       btnTimecode.classList.add('active');
-      tcHint.textContent = `Начало: ${formatted}. Нажмите снова для конца.`;
     } else {
-      // Второе нажатие: фиксируем конец и вставляем ссылку
+      // Второе нажатие: фиксируем конец и показываем ссылку
       const endTime = currentTime;
       const startSeconds = Math.floor(startTime);
       const endSeconds = Math.floor(endTime);
       const endFormatted = formatTime(endSeconds);
       
-      // Формируем ссылку с параметром времени начала и текстом конца
-      const videoUrl = `https://youtu.be/${currentVideoId}?t=${startSeconds} до ${endFormatted}`;
+      // Формируем ссылку с параметром времени начала
+      const videoUrl = `https://youtu.be/${currentVideoId}?t=${startSeconds}`;
       
-      // Вставка в textarea
-      const startPos = descArea.selectionStart;
-      const endPos = descArea.selectionEnd;
-      const textBefore = descArea.value.substring(0, startPos);
-      const textAfter = descArea.value.substring(endPos);
+      // Показываем ссылку отдельно от комментария
+      timecodeOutput.textContent = `${videoUrl} до ${endFormatted}`;
+      timecodeOutput.classList.add('visible');
       
-      descArea.value = textBefore + videoUrl + textAfter;
-      descArea.focus();
-      descArea.selectionStart = descArea.selectionEnd = startPos + videoUrl.length;
-
-      // Сброс кнопки
-      resetTimecodeButton();
-      showToast('Ссылка с таймкодом добавлена');
+      // Блокируем кнопку после использования (только 1 раз в ситуации)
+      btnTimecode.disabled = true;
+      btnTimecode.innerHTML = '<span>⏱</span> Диапазон выбран';
+      
+      showToast('Диапазон времени зафиксирован');
     }
   });
 
@@ -746,7 +758,7 @@ async function renderSituationForm(reportId, sub, sid){
 
     videoStatus.style.display = 'flex';
     videoStatus.className = 'video-status ok';
-    videoStatus.innerHTML = `Видео ID: ${vid} — <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener" style="color:inherit;">открыть на YouTube ↗</a>`;
+    videoStatus.innerHTML = `<a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener" style="color:inherit;">открыть на YouTube ↗</a>`;
 
     // Создаем или пересоздаем плеер
     // Важно: YT.Player требует существующий DOM элемент
@@ -805,6 +817,7 @@ async function renderSituationForm(reportId, sub, sid){
          ytPlayer = null;
       }
       currentVideoId = null;
+      resetTimecodeButton();
       tcControls.style.display = 'none';
       
       if(urlVal.trim().length > 5){
