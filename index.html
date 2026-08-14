@@ -25,6 +25,8 @@
     --danger-glow:rgba(193,85,77,0.4);
     --border:#323c49;
     --border-soft:#2a323d;
+    --youtube:#ff0000;
+    --youtube-glow:rgba(255,0,0,0.4);
     --gradient-1:linear-gradient(135deg, rgba(224,152,47,0.15) 0%, transparent 60%);
     --gradient-2:linear-gradient(135deg, rgba(79,138,139,0.15) 0%, transparent 60%);
   }
@@ -364,6 +366,200 @@
   .icon-btn:hover::before{opacity:0.1;}
   .icon-btn.danger:hover{border-color:var(--danger); color:var(--danger);}
   .icon-btn.danger:hover::before{background:var(--danger);}
+
+  /* YouTube Picker Modal Styles */
+  .yt-picker-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(10,13,17,0.9);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:200;
+    animation:fadeIn 0.3s ease-out;
+  }
+  .yt-picker-modal{
+    background:var(--surface);
+    border:1px solid var(--border);
+    width:95%;
+    max-width:900px;
+    max-height:85vh;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    border-radius:8px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5), 0 0 40px var(--youtube-glow);
+    animation:slideUp 0.4s ease-out;
+  }
+  .yt-picker-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 24px;
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg, var(--surface-2), var(--surface));
+  }
+  .yt-picker-header h3{
+    margin:0;
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    font-size:18px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .yt-picker-header h3::before{
+    content:'▶';
+    color:var(--youtube);
+    font-size:20px;
+    text-shadow:0 0 10px var(--youtube-glow);
+  }
+  .yt-picker-close{
+    background:transparent;
+    border:none;
+    color:var(--muted);
+    font-size:24px;
+    cursor:pointer;
+    transition:all 0.2s ease;
+    width:36px;
+    height:36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .yt-picker-close:hover{
+    color:var(--danger);
+    transform:rotate(90deg);
+  }
+  .yt-picker-body{
+    flex:1;
+    overflow-y:auto;
+    padding:24px;
+  }
+  .yt-auth-section{
+    text-align:center;
+    padding:40px 20px;
+  }
+  .yt-auth-section .icon-large{
+    font-size:64px;
+    color:var(--youtube);
+    margin-bottom:16px;
+    text-shadow:0 0 20px var(--youtube-glow);
+    animation:float 3s ease-in-out infinite;
+  }
+  .yt-auth-section p{
+    color:var(--ink-dim);
+    margin-bottom:24px;
+    font-size:14px;
+  }
+  .btn-youtube{
+    border:1px solid var(--youtube);
+    background:linear-gradient(135deg, var(--youtube), #cc0000);
+    color:white;
+    padding:12px 28px;
+    font-size:14px;
+    font-weight:600;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    transition:all 0.3s ease;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+  }
+  .btn-youtube:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px var(--youtube-glow);
+    filter:brightness(1.1);
+  }
+  .yt-videos-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+    gap:16px;
+  }
+  .yt-video-card{
+    background:var(--surface-2);
+    border:1px solid var(--border-soft);
+    border-radius:6px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    animation:slideUp 0.3s ease-out backwards;
+  }
+  .yt-video-card:nth-child(1){animation-delay:0.05s;}
+  .yt-video-card:nth-child(2){animation-delay:0.1s;}
+  .yt-video-card:nth-child(3){animation-delay:0.15s;}
+  .yt-video-card:nth-child(4){animation-delay:0.2s;}
+  .yt-video-card:nth-child(5){animation-delay:0.25s;}
+  .yt-video-card:nth-child(6){animation-delay:0.3s;}
+  .yt-video-card:hover{
+    transform:translateY(-5px) scale(1.02);
+    border-color:var(--youtube);
+    box-shadow:0 10px 30px rgba(255,0,0,0.2);
+  }
+  .yt-video-thumb{
+    width:100%;
+    aspect-ratio:16/9;
+    background:#000 center/cover no-repeat;
+    position:relative;
+  }
+  .yt-video-thumb::after{
+    content:'▶';
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    color:white;
+    text-shadow:0 2px 8px rgba(0,0,0,0.8);
+    opacity:0;
+    transition:opacity 0.3s ease;
+  }
+  .yt-video-card:hover .yt-video-thumb::after{opacity:1;}
+  .yt-video-info{
+    padding:14px;
+  }
+  .yt-video-title{
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink);
+    margin:0 0 8px;
+    line-height:1.4;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .yt-video-meta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--muted);
+  }
+  .yt-loading{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--muted);
+  }
+  .yt-loading::after{content:' ⠴'; animation:pulse 0.8s infinite;}
+  .yt-error{
+    text-align:center;
+    padding:40px 20px;
+    color:var(--danger);
+  }
+  .yt-picker-footer{
+    padding:16px 24px;
+    border-top:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:var(--surface-2);
+  }
+  .yt-status{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .yt-status.connected{color:var(--accent-2);}
 
   /* ---------- situation form (full page style) ---------- */
   .form-page{max-width:700px;}
@@ -904,7 +1100,12 @@ async function renderSituationForm(reportId, sub, sid){
       <div class="form-card">
         <div class="field">
           <label>Ссылка на YouTube</label>
-          <input type="text" id="f-url" placeholder="https://www.youtube.com/watch?v=..." value="${isEdit ? escapeHtml(existing.url) : ''}">
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;">
+            <input type="text" id="f-url" placeholder="https://www.youtube.com/watch?v=..." value="${isEdit ? escapeHtml(existing.url) : ''}" style="flex:1;">
+            <button type="button" class="btn btn-youtube" id="btn-yt-picker" style="padding:10px 16px;font-size:12px;">
+              <span>▶</span> Выбрать из YouTube
+            </button>
+          </div>
           <div class="err" id="f-url-err">Некорректная ссылка на YouTube</div>
           
           <!-- VIDEO WIDGET CONTAINER -->
@@ -912,7 +1113,7 @@ async function renderSituationForm(reportId, sub, sid){
              <div id="video-container" class="video-preview">
                 <div class="placeholder">
                   <div class="glyph">📺</div>
-                  <div>Вставьте ссылку выше,<br>чтобы увидеть превью</div>
+                  <div>Вставьте ссылку выше,<br>или выберите видео из YouTube</div>
                 </div>
              </div>
              <div id="video-status" class="video-status" style="display:none;"></div>
@@ -1101,6 +1302,200 @@ async function renderSituationForm(reportId, sub, sid){
   urlInput.addEventListener('input', (e) => {
     updateVideoWidget(e.target.value);
   });
+
+  // --- YouTube Picker Integration ---
+  const btnYtPicker = app.querySelector('#btn-yt-picker');
+  
+  // YouTube API credentials - user needs to configure these
+  let YT_API_KEY = localStorage.getItem('yt_api_key') || '';
+  let YT_AUTHORIZED = false;
+  
+  // Функция для открытия модального окна выбора видео
+  async function openYouTubePicker(){
+    const overlay = document.createElement('div');
+    overlay.className = 'yt-picker-overlay';
+    overlay.innerHTML = `
+      <div class="yt-picker-modal">
+        <div class="yt-picker-header">
+          <h3>Выбор видео из YouTube</h3>
+          <button class="yt-picker-close" id="yt-close">×</button>
+        </div>
+        <div class="yt-picker-body" id="yt-picker-body">
+          <div class="yt-loading">Загрузка...</div>
+        </div>
+        <div class="yt-picker-footer">
+          <span class="yt-status" id="yt-status">Статус подключения</span>
+          <button class="btn ghost" id="yt-clear-cache">Очистить кэш</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    const closeBtn = overlay.querySelector('#yt-close');
+    const clearCacheBtn = overlay.querySelector('#yt-clear-cache');
+    const body = overlay.querySelector('#yt-picker-body');
+    const statusEl = overlay.querySelector('#yt-status');
+    
+    closeBtn.addEventListener('click', () => overlay.remove());
+    overlay.addEventListener('click', e => { if(e.target === overlay) overlay.remove(); });
+    
+    clearCacheBtn.addEventListener('click', () => {
+      localStorage.removeItem('yt_videos_cache');
+      localStorage.removeItem('yt_api_key');
+      YT_API_KEY = '';
+      showToast('Кэш очищен');
+      loadVideos();
+    });
+    
+    // Функция загрузки видео
+    async function loadVideos(pageToken = ''){
+      body.innerHTML = '<div class="yt-loading">Загрузка видео с YouTube...</div>';
+      statusEl.textContent = 'Подключение...';
+      statusEl.classList.remove('connected');
+      
+      // Проверяем наличие API ключа
+      if(!YT_API_KEY){
+        // Запрашиваем API ключ у пользователя
+        body.innerHTML = `
+          <div class="yt-auth-section">
+            <div class="icon-large\">▶</div>
+            <h4 style="margin:0 0 12px;font-family:'Oswald';text-transform:uppercase;">Подключение к YouTube</h4>
+            <p>Для выбора видео из вашей творческой студии YouTube необходим API ключ.</p>
+            <p style="font-size:12px;color:var(--muted);">Получить ключ можно в <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:var(--accent);">Google Cloud Console</a></p>
+            <input type="text" id="yt-api-input" placeholder="Введите YouTube Data API v3 Key" style="width:100%;max-width:400px;padding:12px;margin-bottom:16px;background:var(--bg);border:1px solid var(--border);color:white;font-family:'IBM Plex Mono';font-size:13px;">
+            <br>
+            <button class="btn-youtube" id="yt-save-key">
+              <span>🔑</span> Сохранить ключ
+            </button>
+          </div>
+        `;
+        
+        const input = body.querySelector('#yt-api-input');
+        const saveBtn = body.querySelector('#yt-save-key');
+        
+        // Автозаполнение если ключ уже был сохранен
+        if(localStorage.getItem('yt_api_key')){
+          input.value = localStorage.getItem('yt_api_key');
+        }
+        
+        saveBtn.addEventListener('click', () => {
+          const key = input.value.trim();
+          if(key){
+            localStorage.setItem('yt_api_key', key);
+            YT_API_KEY = key;
+            loadVideos();
+          }
+        });
+        
+        input.addEventListener('keypress', e => {
+          if(e.key === 'Enter') saveBtn.click();
+        });
+        
+        statusEl.textContent = 'Требуется API ключ';
+        return;
+      }
+      
+      try {
+        // Загружаем видео с канала пользователя через YouTube Data API
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&mine=true&type=video&maxResults=12&key=${encodeURIComponent(YT_API_KEY)}${pageToken ? '&pageToken=' + pageToken : ''}`;
+        
+        const response = await fetch(url);
+        
+        if(response.status === 401){
+          throw new Error('Неверный API ключ');
+        }
+        if(response.status === 403){
+          throw new Error('Превышен лимит запросов или недостаточно прав');
+        }
+        
+        if(!response.ok){
+          throw new Error(`Ошибка API: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if(!data.items || data.items.length === 0){
+          body.innerHTML = `
+            <div class="yt-error">
+              <p>Видео не найдены</p>
+              <p style="font-size:12px;color:var(--muted);">Убедитесь, что API ключ имеет доступ к YouTube Data API v3</p>
+            </div>
+          `;
+          statusEl.textContent = 'Нет видео';
+          return;
+        }
+        
+        statusEl.textContent = `Загружено: ${data.items.length} видео`;
+        statusEl.classList.add('connected');
+        
+        // Отображаем видео
+        let html = '<div class="yt-videos-grid">';
+        data.items.forEach((item, index) => {
+          const videoId = item.id.videoId;
+          const title = item.snippet.title;
+          const thumb = item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '';
+          const published = new Date(item.snippet.publishedAt).toLocaleDateString('ru-RU');
+          
+          html += `
+            <div class="yt-video-card" data-video-id="${videoId}" data-url="https://www.youtube.com/watch?v=${videoId}" style="animation-delay:${index * 0.05}s">
+              <div class="yt-video-thumb" style="background-image:url('${escapeHtml(thumb)}')"></div>
+              <div class="yt-video-info">
+                <h4 class="yt-video-title">${escapeHtml(title)}</h4>
+                <div class="yt-video-meta">${published}</div>
+              </div>
+            </div>
+          `;
+        });
+        html += '</div>';
+        
+        // Добавляем пагинацию если есть следующая страница
+        if(data.nextPageToken){
+          html += `<div style="text-align:center;margin-top:24px;"><button class="btn ghost" id="yt-load-more">Загрузить ещё</button></div>`;
+        }
+        
+        body.innerHTML = html;
+        
+        // Обработчик выбора видео
+        body.querySelectorAll('.yt-video-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const videoUrl = card.dataset.url;
+            urlInput.value = videoUrl;
+            updateVideoWidget(videoUrl);
+            overlay.remove();
+            showToast('Видео выбрано');
+          });
+        });
+        
+        // Обработчик загрузки следующей страницы
+        const loadMoreBtn = body.querySelector('#yt-load-more');
+        if(loadMoreBtn){
+          loadMoreBtn.addEventListener('click', () => {
+            loadVideos(data.nextPageToken);
+          });
+        }
+        
+      } catch(error){
+        console.error('YouTube API Error:', error);
+        body.innerHTML = `
+          <div class="yt-error">
+            <p style="font-size:16px;margin-bottom:8px;">⚠️ Ошибка подключения</p>
+            <p style="font-size:12px;">${escapeHtml(error.message)}</p>
+            <button class="btn ghost" id="yt-retry" style="margin-top:16px;">Повторить</button>
+          </div>
+        `;
+        statusEl.textContent = 'Ошибка подключения';
+        
+        body.querySelector('#yt-retry')?.addEventListener('click', loadVideos);
+      }
+    }
+    
+    // Начинаем загрузку
+    loadVideos();
+  }
+  
+  // Обработчик кнопки выбора видео
+  btnYtPicker.addEventListener('click', openYouTubePicker);
 
   // Save Logic
   app.querySelector('[data-action="save-form"]').addEventListener('click', async () => {
