@@ -217,25 +217,29 @@
   .video-status.ok{color:var(--accent-2);}
   .video-status.bad{color:var(--danger);}
 
-  /* Timecode Button Styles */
+  /* Timecode Button Styles - Full Width */
   .timecode-controls {
     margin-top: 10px;
     display: flex;
     gap: 10px;
     align-items: center;
+    width: 100%;
   }
   .btn-timecode {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
-    padding: 6px 12px;
+    padding: 8px 16px;
     border: 1px solid var(--accent-2);
     color: var(--accent-2);
     background: transparent;
     cursor: pointer;
     transition: all 0.2s;
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
+    flex: 1;
+    width: 100%;
   }
   .btn-timecode:hover {
     background: rgba(79, 138, 139, 0.1);
@@ -254,6 +258,18 @@
     font-size: 11px;
     color: var(--muted);
     font-family: 'IBM Plex Mono', monospace;
+    display: none;
+  }
+  .timecode-output {
+    margin-top: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-2);
+    word-break: break-all;
+    display: none;
+  }
+  .timecode-output.visible {
+    display: block;
   }
 
   .form-footer{display:flex; justify-content:flex-end; gap:10px; margin-top:30px; padding-top:20px; border-top:1px solid var(--border-soft);}
@@ -493,7 +509,7 @@ async function renderReport(reportId){
         <div class="cell"><div class="lbl">Разделов</div><div class="val">${SUBSECTIONS.length}</div></div>
         <div class="cell"><div class="lbl">Ситуаций всего</div><div class="val">${totalSituations}</div></div>
         <div class="cell"><div class="lbl">Заполнено</div><div class="val">${SUBSECTIONS.filter(s=>(sit[s]||[]).length>0).length} / ${SUBSECTIONS.length}</div></div>
-        <div class="cell full"><div class="lbl">Действия</div><div class="val"><button class="btn danger" style="padding:5px 10px; font-size:11px;" data-action="delete-report">Удалить отчёт</button></div></div>
+        <div class="cell full"><div class="lbl">Действия</div><div class="val" style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn danger" style="padding:5px 10px; font-size:11px;" data-action="delete-report">Удалить отчёт</button><button class="btn solid" style="padding:5px 10px; font-size:11px;" data-action="copy-report">Копировать отчёт</button></div></div>
       </div>
     </div>
 
@@ -510,6 +526,13 @@ async function renderReport(reportId){
   `;
 
   bindNavHandlers();
+  
+  // Кнопка копирования отчета
+  const copyBtn = app.querySelector('[data-action="copy-report"]');
+  copyBtn.addEventListener('click', async () => {
+    await renderCopyReportView(reportId, report);
+  });
+  
   const delBtn = app.querySelector('[data-action="delete-report"]');
   delBtn.addEventListener('click', async () => {
     if(!confirm(`Удалить отчёт «${report.title}» и все его данные?`)) return;
@@ -527,6 +550,82 @@ function declineSituation(n){
   if(mod10 === 1) return 'ситуация';
   if(mod10 >= 2 && mod10 <= 4) return 'ситуации';
   return 'ситуаций';
+}
+
+// ---------- COPY REPORT VIEW ----------
+async function renderCopyReportView(reportId, report){
+  app.innerHTML = topbarHtml() + breadcrumbsHtml(report, null, 'Копирование отчёта') + `
+    <div class="form-page" style="max-width:900px;">
+      <div class="page-head">
+        <div>
+          <h1>Отчёт для копирования</h1>
+          <p>${escapeHtml(report.title)}</p>
+        </div>
+        <button class="btn solid" data-action="copy-to-clipboard">Копировать в буфер</button>
+      </div>
+      
+      <div class="form-card">
+        <div class="field">
+          <label>Сформированный отчёт</label>
+          <textarea id="report-output" rows="30" readonly></textarea>
+        </div>
+        
+        <div class="form-footer">
+          <button class="btn ghost" data-action="back-to-report">Назад к отчёту</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  bindNavHandlers();
+  
+  // Кнопка назад
+  app.querySelector('[data-action="back-to-report"]').addEventListener('click', () => {
+    nav({view:'report', id: reportId});
+  });
+  
+  // Кнопка копирования в буфер
+  app.querySelector('[data-action="copy-to-clipboard"]').addEventListener('click', async () => {
+    const textarea = app.querySelector('#report-output');
+    textarea.select();
+    try {
+      await navigator.clipboard.writeText(textarea.value);
+      showToast('Отчёт скопирован в буфер обмена');
+    } catch(e) {
+      showToast('Ошибка копирования');
+    }
+  });
+  
+  // Формируем текст отчёта
+  const sitData = await getSituations(reportId);
+  let reportText = '';
+  
+  for(const sub of SUBSECTIONS){
+    const list = (sitData[sub] || []).slice().sort((a,b)=>a.createdAt - b.createdAt);
+    if(list.length > 0){
+      reportText += `${sub}:\n`;
+      for(const s of list){
+        const vid = youtubeId(s.url);
+        let timecodeLink = '';
+        
+        // Проверяем, есть ли в описании временная ссылка (формат: https://youtu.be/...?t=XXX до MM:SS)
+        const tcMatch = s.description.match(/(https:\/\/youtu\.be\/[A-Za-z0-9_-]+\?t=\d+)\s+до\s+(\d+:\d+)/);
+        if(tcMatch){
+          timecodeLink = tcMatch[1];
+          const endTime = tcMatch[2];
+          // Извлекаем комментарий (всё что после "до MM:SS - ")
+          const commentPart = s.description.split(/до\s+\d+:\d+\s*-\s*/)[1] || '';
+          reportText += `${timecodeLink} до ${endTime} - ${commentPart}\n`;
+        } else {
+          // Если нет временной ссылки, используем обычную ссылку и описание
+          reportText += `${s.url} - ${s.description}\n`;
+        }
+      }
+      reportText += '\n';
+    }
+  }
+  
+  app.querySelector('#report-output').value = reportText.trim();
 }
 
 // ---------- SECTION (SITUATIONS) VIEW ----------
@@ -641,11 +740,11 @@ async function renderSituationForm(reportId, sub, sid){
              
              <!-- TIMECODE BUTTON -->
              <div class="timecode-controls" id="tc-controls" style="display:none;">
-               <button type="button" id="btn-timecode" class="btn-timecode">
-                 <span>⏱</span> Начиная с...
+               <button type="button" id="btn-timecode" class="btn-timecode" disabled>
+                 <span>⏱</span> Выбрать временной диапазон
                </button>
-               <span class="tc-hint" id="tc-hint"></span>
              </div>
+             <div class="timecode-output" id="timecode-output"></div>
           </div>
         </div>
 
@@ -676,19 +775,22 @@ async function renderSituationForm(reportId, sub, sid){
   const videoStatus = app.querySelector('#video-status');
   const tcControls = app.querySelector('#tc-controls');
   const btnTimecode = app.querySelector('#btn-timecode');
-  const tcHint = app.querySelector('#tc-hint');
+  const timecodeOutput = app.querySelector('#timecode-output');
   const descArea = app.querySelector('#f-desc');
 
   // State for timecode selection
   let startTime = null;
   let isSelectingRange = false;
+  let currentVideoId = null;
 
   function resetTimecodeButton() {
     startTime = null;
     isSelectingRange = false;
-    btnTimecode.innerHTML = '<span>⏱</span> Начиная с...';
+    btnTimecode.innerHTML = '<span>⏱</span> Выбрать временной диапазон';
     btnTimecode.classList.remove('active');
-    tcHint.textContent = '';
+    btnTimecode.disabled = false;
+    timecodeOutput.classList.remove('visible');
+    timecodeOutput.textContent = '';
   }
 
   // Обработчик кнопки таймкода
@@ -705,30 +807,27 @@ async function renderSituationForm(reportId, sub, sid){
       // Первое нажатие: фиксируем начало
       startTime = currentTime;
       isSelectingRange = true;
-      btnTimecode.innerHTML = `<span>⏱</span> До (${formatted})...`;
+      btnTimecode.innerHTML = `<span>⏱</span> Зафиксировано начало: ${formatted}. Нажмите для завершения`;
       btnTimecode.classList.add('active');
-      tcHint.textContent = `Начало: ${formatted}. Нажмите снова для конца.`;
     } else {
-      // Второе нажатие: фиксируем конец и вставляем текст
+      // Второе нажатие: фиксируем конец и показываем ссылку
       const endTime = currentTime;
-      const startStr = formatTime(startTime);
-      const endStr = formatTime(endTime);
+      const startSeconds = Math.floor(startTime);
+      const endSeconds = Math.floor(endTime);
+      const endFormatted = formatTime(endSeconds);
       
-      const insertText = `[Начиная с ${startStr} до ${endStr}] `;
+      // Формируем ссылку с параметром времени начала
+      const videoUrl = `https://youtu.be/${currentVideoId}?t=${startSeconds}`;
       
-      // Вставка в textarea
-      const startPos = descArea.selectionStart;
-      const endPos = descArea.selectionEnd;
-      const textBefore = descArea.value.substring(0, startPos);
-      const textAfter = descArea.value.substring(endPos);
+      // Показываем ссылку отдельно от комментария
+      timecodeOutput.textContent = `${videoUrl} до ${endFormatted}`;
+      timecodeOutput.classList.add('visible');
       
-      descArea.value = textBefore + insertText + textAfter;
-      descArea.focus();
-      descArea.selectionStart = descArea.selectionEnd = startPos + insertText.length;
-
-      // Сброс кнопки
-      resetTimecodeButton();
-      showToast('Таймкод добавлен');
+      // Блокируем кнопку после использования (только 1 раз в ситуации)
+      btnTimecode.disabled = true;
+      btnTimecode.innerHTML = '<span>⏱</span> Диапазон выбран';
+      
+      showToast('Диапазон времени зафиксирован');
     }
   });
 
@@ -742,7 +841,7 @@ async function renderSituationForm(reportId, sub, sid){
 
     videoStatus.style.display = 'flex';
     videoStatus.className = 'video-status ok';
-    videoStatus.innerHTML = `Видео ID: ${vid} — <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener" style="color:inherit;">открыть на YouTube ↗</a>`;
+    videoStatus.innerHTML = `<a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener" style="color:inherit;">открыть на YouTube ↗</a>`;
 
     // Создаем или пересоздаем плеер
     // Важно: YT.Player требует существующий DOM элемент
@@ -757,6 +856,8 @@ async function renderSituationForm(reportId, sub, sid){
       if(ytPlayer) {
         try{ ytPlayer.destroy(); }catch(e){}
       }
+      
+      currentVideoId = vid;
       
       ytPlayer = new YT.Player('yt-player-target', {
         height: '100%',
@@ -798,6 +899,8 @@ async function renderSituationForm(reportId, sub, sid){
          try{ ytPlayer.destroy(); }catch(e){}
          ytPlayer = null;
       }
+      currentVideoId = null;
+      resetTimecodeButton();
       tcControls.style.display = 'none';
       
       if(urlVal.trim().length > 5){
@@ -823,7 +926,7 @@ async function renderSituationForm(reportId, sub, sid){
   // Save Logic
   app.querySelector('[data-action="save-form"]').addEventListener('click', async () => {
     const url = urlInput.value.trim();
-    const desc = descArea.value.trim();
+    let desc = descArea.value.trim();
     let valid = true;
 
     if(!url || !youtubeId(url)){
@@ -841,6 +944,14 @@ async function renderSituationForm(reportId, sub, sid){
     }
 
     if(!valid) return;
+
+    // Если была выбрана временная ссылка, добавляем её в начало описания
+    const timecodeText = timecodeOutput.textContent.trim();
+    if(timecodeText && !desc.startsWith(timecodeText)){
+      // Добавляем временную ссылку в начало описания с датой видео
+      const videoDate = formatDate(Date.now());
+      desc = `${videoDate}: ${timecodeText} - ${desc}`;
+    }
 
     const data = await getSituations(reportId);
     if(!data[sub]) data[sub] = [];
