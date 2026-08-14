@@ -682,10 +682,12 @@ async function renderSituationForm(reportId, sub, sid){
   // State for timecode selection
   let startTime = null;
   let isSelectingRange = false;
+  let currentVideoId = null;
 
   function resetTimecodeButton() {
     startTime = null;
     isSelectingRange = false;
+    currentVideoId = null;
     btnTimecode.innerHTML = '<span>⏱</span> Начиная с...';
     btnTimecode.classList.remove('active');
     tcHint.textContent = '';
@@ -709,12 +711,13 @@ async function renderSituationForm(reportId, sub, sid){
       btnTimecode.classList.add('active');
       tcHint.textContent = `Начало: ${formatted}. Нажмите снова для конца.`;
     } else {
-      // Второе нажатие: фиксируем конец и вставляем текст
+      // Второе нажатие: фиксируем конец и вставляем ссылку
       const endTime = currentTime;
-      const startStr = formatTime(startTime);
-      const endStr = formatTime(endTime);
+      const startSeconds = Math.floor(startTime);
+      const endSeconds = Math.floor(endTime);
       
-      const insertText = `[Начиная с ${startStr} до ${endStr}] `;
+      // Формируем ссылку с параметрами времени
+      const videoUrl = `https://youtu.be/${currentVideoId}?start=${startSeconds}&end=${endSeconds}`;
       
       // Вставка в textarea
       const startPos = descArea.selectionStart;
@@ -722,13 +725,13 @@ async function renderSituationForm(reportId, sub, sid){
       const textBefore = descArea.value.substring(0, startPos);
       const textAfter = descArea.value.substring(endPos);
       
-      descArea.value = textBefore + insertText + textAfter;
+      descArea.value = textBefore + videoUrl + textAfter;
       descArea.focus();
-      descArea.selectionStart = descArea.selectionEnd = startPos + insertText.length;
+      descArea.selectionStart = descArea.selectionEnd = startPos + videoUrl.length;
 
       // Сброс кнопки
       resetTimecodeButton();
-      showToast('Таймкод добавлен');
+      showToast('Ссылка с таймкодом добавлена');
     }
   });
 
@@ -757,6 +760,8 @@ async function renderSituationForm(reportId, sub, sid){
       if(ytPlayer) {
         try{ ytPlayer.destroy(); }catch(e){}
       }
+      
+      currentVideoId = vid;
       
       ytPlayer = new YT.Player('yt-player-target', {
         height: '100%',
@@ -798,6 +803,7 @@ async function renderSituationForm(reportId, sub, sid){
          try{ ytPlayer.destroy(); }catch(e){}
          ytPlayer = null;
       }
+      currentVideoId = null;
       tcControls.style.display = 'none';
       
       if(urlVal.trim().length > 5){
