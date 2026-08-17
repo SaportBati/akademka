@@ -1,0 +1,11 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="10" fill="#11161d"/>
+  <rect x="7" y="7" width="50" height="50" rx="3" fill="none" stroke="#4f86b8" stroke-width="3"/>
+  <g stroke="#b08d52" stroke-width="1.6" stroke-linecap="square" opacity="0.85">
+    <path d="M3 14 L3 3 L14 3"/>
+    <path d="M50 3 L61 3 L61 14"/>
+    <path d="M3 50 L3 61 L14 61"/>
+    <path d="M61 50 L61 61 L50 61"/>
+  </g>
+  <text x="32" y="45" font-family="Oswald, 'Arial Narrow', Arial, sans-serif" font-weight="700" font-size="32" fill="#4f86b8" text-anchor="middle">Р</text>
+</svg>
