@@ -85,6 +85,8 @@ button{font-family:inherit; cursor:pointer;}
   from{opacity:0; transform:translateY(-10px) scale(.97);}
   to{opacity:1; transform:translateY(0) scale(1);}
 }
+@keyframes seal-spin{to{transform:rotate(360deg);}}
+@keyframes seal-spin-rev{to{transform:rotate(-360deg);}}
 
 /* карточные списки — "раздача карточек" при загрузке */
 .registry-row, .sub-card, .sit-card, .draft-item, .lib-item{
@@ -131,8 +133,17 @@ button{font-family:inherit; cursor:pointer;}
   transform:rotate(-4deg);
   box-shadow:0 3px 0 var(--accent-dim), 0 6px 14px rgba(0,0,0,0.32);
   transition:transform .3s var(--ease-pop), box-shadow .3s var(--ease-pop);
+  position:relative;
 }
 .brand:hover .brand-mark{transform:rotate(0deg) scale(1.06); box-shadow:0 2px 0 var(--accent-dim), 0 8px 18px rgba(0,0,0,0.38);}
+/* сургучная печать: тонкое кольцо медленно вращается вокруг марки, как гербовая печать на документе */
+.brand-mark::before{
+  content:''; position:absolute; inset:-6px; border-radius:50%;
+  border:1.5px dashed var(--accent-2); opacity:0.5;
+  animation:seal-spin 16s linear infinite;
+  pointer-events:none;
+}
+.sf-brand .brand-mark::before{inset:-4px; animation-duration:14s;}
 .brand-text .t1{font-size:10.5px; letter-spacing:0.2em; color:var(--muted); font-family:'PT Mono',monospace;}
 .brand-text .t2{font-family:'Oswald',sans-serif; font-size:21px; font-weight:600; letter-spacing:0.02em; text-transform:uppercase; margin-top:3px;}
 
@@ -196,7 +207,8 @@ button{font-family:inherit; cursor:pointer;}
   color:var(--muted); border-bottom:2px solid var(--border); text-transform:uppercase;
   background:rgba(0,0,0,0.15);
 }
-.reg-num{font-family:'PT Mono',monospace; color:var(--accent); font-size:13px; font-weight:700;}
+.reg-num{font-family:'PT Mono',monospace; color:var(--accent); font-size:13px; font-weight:700; transition:text-shadow .25s ease, letter-spacing .25s ease;}
+.registry-row:hover .reg-num{text-shadow:2px 0 0 var(--accent-2-glow), -1px 0 0 var(--accent-glow); letter-spacing:0.02em;}
 .reg-title{font-weight:700; font-size:15px;}
 .reg-date{font-family:'PT Mono',monospace; font-size:12.5px; color:var(--ink-dim);}
 .reg-progress{display:flex; gap:4px; align-items:center;}
@@ -204,6 +216,12 @@ button{font-family:inherit; cursor:pointer;}
 .dot.filled{background:var(--accent-2); border-color:var(--accent-2); box-shadow:0 0 0 3px var(--accent-2-glow); transform:scale(1.1);}
 .reg-arrow{color:var(--muted); text-align:right; font-size:17px; transition:all .22s var(--ease-pop);}
 .registry-row:hover .reg-arrow{color:var(--accent); transform:translateX(5px);}
+/* когда все разделы заполнены — строка отмечается тёплым свечением вместо обычного */
+.registry-row:has(.reg-progress:not(:has(.dot:not(.filled)))){
+  background:linear-gradient(90deg, transparent, rgba(218,165,63,0.07), transparent);
+}
+.registry-row:has(.reg-progress:not(:has(.dot:not(.filled)))) .reg-num{color:var(--accent-2);}
+.registry-row:has(.reg-progress:not(:has(.dot:not(.filled)))) .dot.filled{box-shadow:0 0 0 3px var(--accent-2-glow), 0 0 9px var(--accent-2-glow);}
 
 .empty{
   text-align:center; padding:70px 20px; color:var(--muted);
@@ -217,7 +235,9 @@ button{font-family:inherit; cursor:pointer;}
 .titleblock-wrap{display:flex; gap:20px; align-items:stretch; margin-bottom:30px; flex-wrap:wrap;}
 .titleblock{
   flex:1; min-width:260px;
-  background:var(--paper); color:var(--paper-ink);
+  background-color:var(--paper); color:var(--paper-ink);
+  background-image:radial-gradient(circle at 1px 1px, rgba(43,36,21,0.08) 1px, transparent 1.4px);
+  background-size:6px 6px;
   padding:22px 24px; border-radius:var(--r-md);
   position:relative; border:1px solid var(--paper-2);
   transform:rotate(-0.6deg);
@@ -229,7 +249,9 @@ button{font-family:inherit; cursor:pointer;}
   width:230px; border:2px solid var(--accent-2); border-radius:var(--r-md);
   font-family:'PT Mono',monospace; font-size:11px;
   display:grid; grid-template-columns:1fr 1fr;
-  background:rgba(218,165,63,0.06);
+  background-color:rgba(218,165,63,0.06);
+  background-image:radial-gradient(circle at 1px 1px, rgba(218,165,63,0.12) 1px, transparent 1.4px);
+  background-size:7px 7px;
   transform:rotate(-1deg);
   overflow:hidden;
 }
@@ -257,7 +279,8 @@ button{font-family:inherit; cursor:pointer;}
 }
 .sub-card:hover::after{border-width:0 24px 24px 0;}
 .sub-card:hover{transform:translateY(-5px) rotate(-0.6deg); border-color:var(--accent); box-shadow:0 12px 26px rgba(0,0,0,0.32);}
-.sub-card .code{font-family:'PT Mono',monospace; font-size:20px; color:var(--accent); font-weight:700;}
+.sub-card .code{font-family:'PT Mono',monospace; font-size:20px; color:var(--accent); font-weight:700; transition:text-shadow .25s ease;}
+.sub-card:hover .code{text-shadow:2.5px 0 0 var(--accent-2-glow), -1.5px 0 0 var(--accent-glow);}
 .sub-card .count{font-size:12.5px; color:var(--ink-dim); margin-top:auto;}
 .sub-card .count b{color:var(--ink); font-weight:700;}
 
@@ -360,6 +383,14 @@ button{font-family:inherit; cursor:pointer;}
   transition:border-color .3s ease, box-shadow .3s ease;
 }
 .video-preview:hover{border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-glow);}
+/* перфорация киноплёнки по краям кадра */
+.video-preview::before, .video-preview::after{
+  content:''; position:absolute; left:0; right:0; height:7px; z-index:2; pointer-events:none;
+  background-image:repeating-radial-gradient(circle at 9px 3.5px, var(--bg) 0 2.1px, transparent 2.5px 18px);
+  opacity:0.55;
+}
+.video-preview::before{top:0;}
+.video-preview::after{bottom:0;}
 .video-preview iframe{width:100%; height:100%; border:0; display:block;}
 .video-preview .placeholder{
   color:var(--muted); font-family:'PT Mono',monospace; font-size:12.5px; text-align:center;
@@ -417,7 +448,8 @@ button{font-family:inherit; cursor:pointer;}
 }
 .draft-comment-input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-glow);}
 
-.lib-item{border:2px solid var(--border-soft); background:var(--surface-2); margin-bottom:16px; padding:13px; border-radius:var(--r-md); transition:border-color .2s ease;}
+.lib-item{border:2px solid var(--border-soft); background:var(--surface-2); margin-bottom:16px; padding:13px; border-radius:var(--r-md); transition:transform .22s var(--ease-pop), border-color .2s ease, box-shadow .22s ease;}
+.lib-item:hover{transform:translateY(-3px); border-color:var(--accent-2); box-shadow:0 8px 18px rgba(0,0,0,0.25);}
 .lib-item:last-child{margin-bottom:0;}
 .lib-item .lib-link{font-size:11.5px; color:var(--accent-2); word-break:break-all; display:block; margin-bottom:10px; line-height:1.4;}
 .lib-item .video-preview{aspect-ratio:16/9;}
@@ -434,11 +466,12 @@ button{font-family:inherit; cursor:pointer;}
   transition:all .2s var(--ease-pop);
 }
 .btn-check:hover{border-color:var(--accent-2); color:var(--accent-2); transform:translateY(-1px);}
-.btn-check.checked{background:var(--accent-2); border-color:var(--accent-2); color:#241a05; box-shadow:0 2px 0 var(--accent-2-dim);}
+.btn-check.checked{background:var(--accent-2); border-color:var(--accent-2); color:#241a05; box-shadow:0 2px 0 var(--accent-2-dim), 0 0 0 3px rgba(218,165,63,0.22);}
 .checked-badge{
   font-family:'PT Mono',monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase;
   color:var(--accent-2); border:2px solid var(--accent-2); border-radius:var(--r-pill); padding:3px 8px; display:inline-flex;
   align-items:center; gap:4px; flex-shrink:0;
+  box-shadow:0 0 0 3px rgba(218,165,63,0.15);
 }
 
 /* ===== рабочая область отчёта (сплит-экран) ===== */
