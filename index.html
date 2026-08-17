@@ -8,12 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
 <style>
-  /* =====================================================
-     TOKENS
-     Concept: a technical registry — draftsman's title
-     blocks, blueprint ink, aged record paper, brass
-     instrument markings, red correction ink.
-     ===================================================== */
+
   :root{
     --bg:#11161d;
     --bg-grid:rgba(143,166,196,0.05);
@@ -66,9 +61,6 @@
     }
   }
 
-  /* ---------- registration marks (signature element) ----------
-     Small crosshair marks referencing print/drafting registration
-     points, placed at the corners of primary document surfaces. */
   .reg-mark{
     position:absolute; width:11px; height:11px; pointer-events:none; opacity:0.55;
     background:
@@ -86,7 +78,6 @@
     opacity:0.4;
   }
 
-  /* ---------- shell ---------- */
   .shell{max-width:1040px; margin:0 auto; padding:28px 24px 80px; position:relative;}
 
   .topbar{
@@ -140,7 +131,6 @@
   .btn.danger:hover{background:var(--danger); color:#180d0b; box-shadow:0 0 16px var(--danger-glow);}
   .btn:disabled{opacity:0.45; cursor:not-allowed; transform:none; box-shadow:none;}
 
-  /* ---------- registry table ---------- */
   .page-head{display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:22px; gap:16px; flex-wrap:wrap;}
   .page-head h1{font-family:'Oswald',sans-serif; font-size:28px; margin:0; text-transform:uppercase; letter-spacing:0.02em; position:relative; display:inline-block;}
   .page-head h1::after{
@@ -186,7 +176,6 @@
   .empty .display{font-size:18px; color:var(--ink-dim); margin-bottom:8px;}
   .empty p{font-size:13.5px; max-width:360px; margin:0 auto 18px;}
 
-  /* ---------- title block (stamp) ---------- */
   .titleblock-wrap{display:flex; gap:20px; align-items:stretch; margin-bottom:30px; flex-wrap:wrap;}
   .titleblock{
     flex:1; min-width:260px;
@@ -217,7 +206,6 @@
   .stamp .val{color:var(--ink);}
   .stamp .full{grid-column:1 / -1;}
 
-  /* ---------- subsection grid ---------- */
   .sub-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
   @media(max-width:720px){.sub-grid{grid-template-columns:repeat(2,1fr);}}
   .sub-card{
@@ -237,7 +225,6 @@
   .sub-card .count{font-size:12.5px; color:var(--ink-dim); margin-top:auto; position:relative;}
   .sub-card .count b{color:var(--ink); font-weight:700;}
 
-  /* ---------- situations list ---------- */
   .sit-list{display:flex; flex-direction:column; gap:14px;}
   .sit-card{
     border:1px solid var(--border); background:var(--surface);
@@ -252,6 +239,8 @@
   }
   .sit-card:hover::before{transform:scaleY(1);}
   .sit-card:hover{border-color:var(--border-soft); transform:translateX(3px); box-shadow:0 4px 15px rgba(0,0,0,0.2);}
+  .sit-card.is-checked{border-color:var(--accent-2);}
+  .sit-card.is-checked::before{background:var(--accent-2); transform:scaleY(1);}
   @media(max-width:640px){
     .sit-card{grid-template-columns:1fr;}
     .sit-thumb{width:100%; height:170px;}
@@ -280,7 +269,6 @@
   .sit-link:hover{color:var(--accent);}
   .sit-actions{display:flex; flex-direction:column; gap:8px;}
 
-  /* ---------- toast & loading ---------- */
   .toast{
     position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
     background:var(--accent); color:#0c1116; padding:11px 20px; font-size:13px; font-weight:700;
@@ -309,7 +297,6 @@
   .icon-btn:hover{border-color:var(--accent); color:var(--accent); transform:scale(1.08); box-shadow:0 0 9px var(--accent-glow);}
   .icon-btn.danger:hover{border-color:var(--danger); color:var(--danger); box-shadow:0 0 9px var(--danger-glow);}
 
-  /* ---------- situation form (full page style) ---------- */
   .form-page{max-width:700px;}
   .form-page .page-head h1{font-size:24px;}
   .form-card{border:1px solid var(--border); background:var(--surface); padding:26px; position:relative;}
@@ -324,7 +311,6 @@
   .field input:focus, .field textarea:focus{outline:none; border-color:var(--accent); box-shadow:0 0 12px var(--accent-glow);}
   .field .err{font-size:11.5px; color:var(--danger); margin-top:6px; display:none;}
 
-  /* Video Widget Styles */
   .video-widget-wrap{margin-top:12px;}
   .video-preview{
     border:1px solid var(--border-soft); background:var(--surface-2);
@@ -343,7 +329,6 @@
   .video-status.ok{color:var(--accent-2);}
   .video-status.bad{color:var(--danger);}
 
-  /* Timecode Button Styles - Full Width */
   .timecode-controls{
     margin-top:10px; display:flex; gap:10px; align-items:center; width:100%;
   }
@@ -376,7 +361,70 @@
 
   .form-footer{display:flex; justify-content:flex-end; gap:10px; margin-top:30px; padding-top:20px; border-top:1px solid var(--border-soft);}
 
-  /* ---------- modal ---------- */
+  .seg-list{display:flex; flex-direction:column; gap:10px;}
+  .seg-item{border:1px solid var(--border); background:var(--surface-2); padding:12px 40px 12px 14px; position:relative;}
+  .seg-item .seg-meta{font-family:'PT Mono',monospace; font-size:11px; color:var(--accent-2); margin-bottom:5px; word-break:break-all;}
+  .seg-item .seg-comment{font-size:13.5px; color:var(--ink-dim); line-height:1.4; white-space:pre-wrap;}
+  .seg-item .seg-remove{position:absolute; top:9px; right:9px;}
+
+  .draft-list{display:flex; flex-direction:column; gap:10px;}
+  .draft-item{border:1px solid var(--accent-2); background:rgba(176,141,82,0.08); padding:12px 14px;}
+  .draft-item .seg-meta{font-family:'PT Mono',monospace; font-size:11px; color:var(--accent-2); margin-bottom:8px; word-break:break-all;}
+  .draft-comment-input{
+    width:100%; padding:9px 10px; font-size:13px; resize:vertical; min-height:44px;
+    background:var(--bg); border:1px solid var(--border); color:var(--ink); font-family:'PT Sans',sans-serif;
+  }
+  .draft-comment-input:focus{outline:none; border-color:var(--accent);}
+
+  .lib-item{border:1px solid var(--border-soft); background:var(--surface-2); margin-bottom:16px; padding:12px;}
+  .lib-item:last-child{margin-bottom:0;}
+  .lib-item .lib-link{font-size:11.5px; color:var(--accent-2); word-break:break-all; display:block; margin-bottom:10px; line-height:1.4;}
+  .lib-item .video-preview{aspect-ratio:16/9;}
+  .lib-item .timecode-controls{margin-top:8px;}
+  .lib-item .btn-timecode{font-size:11px; padding:7px 10px;}
+  .btn-timecode.btn-timecode-full{flex:0 0 auto; width:auto; white-space:nowrap;}
+  .lib-item.is-checked{border-color:var(--accent-2); background:rgba(176,141,82,0.06);}
+  .lib-item-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px;}
+  .lib-item-head .lib-link{margin-bottom:0; flex:1; min-width:0;}
+  .btn-check{
+    font-family:'PT Mono',monospace; font-size:10.5px; letter-spacing:0.04em; text-transform:uppercase;
+    border:1px solid var(--border); color:var(--ink-dim); background:transparent;
+    padding:6px 10px; display:flex; align-items:center; gap:5px; white-space:nowrap; flex-shrink:0;
+    transition:all .2s ease;
+  }
+  .btn-check:hover{border-color:var(--accent-2); color:var(--accent-2);}
+  .btn-check.checked{background:var(--accent-2); border-color:var(--accent-2); color:#161006;}
+  .checked-badge{
+    font-family:'PT Mono',monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--accent-2); border:1px solid var(--accent-2); padding:3px 7px; display:inline-flex;
+    align-items:center; gap:4px; flex-shrink:0;
+  }
+
+  .sf-wrap{
+    position:fixed; inset:0; z-index:5; background:var(--bg);
+    display:flex; flex-direction:column;
+  }
+  .sf-top{
+    flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap;
+    padding:12px 22px; border-bottom:1px solid var(--border); background:var(--surface);
+  }
+  .sf-brand{display:flex; align-items:center; gap:14px; min-width:0;}
+  .sf-brand .brand-mark{width:30px; height:30px; font-size:12px; flex-shrink:0;}
+  .sf-brand .breadcrumbs{margin:0;}
+  .sf-title{flex:1 1 260px; min-width:0;}
+  .sf-title h1{font-family:'Oswald',sans-serif; font-size:16px; margin:0; text-transform:uppercase; letter-spacing:0.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .sf-title p{margin:2px 0 0; color:var(--muted); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .sf-top-actions{display:flex; gap:10px; flex:0 0 auto;}
+  .sf-split{flex:1 1 auto; min-height:0; display:grid; grid-template-columns:1fr 1fr;}
+  @media(max-width:900px){
+    .sf-split{grid-template-columns:1fr; overflow-y:auto;}
+    .sf-pane{height:auto !important; overflow-y:visible !important;}
+  }
+  .sf-pane{position:relative; min-height:0; height:100%; overflow-y:auto; padding:24px 26px 50px;}
+  .sf-pane-left{border-right:1px solid var(--border); background:var(--surface);}
+  .sf-pane-right{background:var(--bg);}
+  .sf-pane-right h3{margin:0 0 14px; font-family:'Oswald',sans-serif; font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted);}
+
   .modal-overlay{
     position:fixed; inset:0; background:rgba(8,10,14,0.78); display:flex;
     align-items:center; justify-content:center; z-index:100; padding:20px;
@@ -392,6 +440,16 @@
   }
   .modal-card input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 12px var(--accent-glow);}
   .modal-actions{display:flex; justify-content:flex-end; gap:10px;}
+
+  .pending-banner{
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    border:1px solid var(--accent-2); background:rgba(176,141,82,0.1);
+    padding:14px 16px; margin-bottom:16px;
+  }
+  .pending-banner-title{font-family:'PT Mono',monospace; font-size:13px; color:var(--accent-2); margin-bottom:4px;}
+  .pending-banner-sub{font-size:12.5px; color:var(--ink-dim);}
+  .sub-grid.armed .sub-card{border-color:var(--accent-2); box-shadow:0 0 0 1px var(--accent-2-glow), 0 0 14px var(--accent-2-glow);}
+  .sub-grid.armed .sub-card::before{background:linear-gradient(135deg, rgba(176,141,82,0.14) 0%, transparent 50%);}
 </style>
 </head>
 <body>
@@ -400,11 +458,10 @@
   <div class="loading">Загрузка реестра…</div>
 </div>
 
-<!-- Подключаем YouTube IFrame API -->
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-const SUBSECTIONS = ["7.1","7.2","7.3","7.4","7.5","7.6","7.8","7.9","7.10"];
+const SUBSECTIONS = ["7.1","7.2","7.3","7.4","7.5","7.6","7.7","7.8","7.9","7.10"];
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 function escapeHtml(s){
@@ -425,19 +482,90 @@ function youtubeId(url){
   return null;
 }
 
-// Форматирование секунд в MM:SS
 function formatTime(seconds) {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-// ---------- registration-mark helper ----------
+function formatDurationLong(totalSeconds){
+  totalSeconds = Math.max(0, Math.floor(totalSeconds || 0));
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  if(h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function fetchSingleDuration(vid){
+  return new Promise((resolve) => {
+    if(typeof YT === 'undefined' || typeof YT.Player === 'undefined'){
+      resolve(null);
+      return;
+    }
+    const containerId = 'dur-fetch-' + vid.replace(/[^A-Za-z0-9_-]/g,'') + '-' + Math.random().toString(36).slice(2,8);
+    const holder = document.createElement('div');
+    holder.id = containerId;
+    holder.style.position = 'fixed';
+    holder.style.left = '-9999px';
+    holder.style.top = '0';
+    holder.style.width = '200px';
+    holder.style.height = '150px';
+    document.body.appendChild(holder);
+
+    let settled = false;
+    let player = null;
+
+    function finish(val){
+      if(settled) return;
+      settled = true;
+      clearTimeout(timeoutId);
+      try{ if(player && typeof player.destroy === 'function') player.destroy(); }catch(e){}
+      if(holder.parentNode) holder.parentNode.removeChild(holder);
+      resolve(val);
+    }
+
+    const timeoutId = setTimeout(() => finish(null), 8000);
+
+    try{
+      player = new YT.Player(containerId, {
+        height: '150', width: '200', videoId: vid,
+        playerVars: { 'controls': 0 },
+        events: {
+          onReady: function(e){
+            let dur = 0;
+            try{ dur = e.target.getDuration(); }catch(err){}
+            if(!dur){
+              setTimeout(() => {
+                let d2 = 0;
+                try{ d2 = e.target.getDuration(); }catch(err){}
+                finish(d2 || null);
+              }, 700);
+            } else {
+              finish(dur);
+            }
+          },
+          onError: function(){ finish(null); }
+        }
+      });
+    }catch(e){
+      finish(null);
+    }
+  });
+}
+
+async function fetchVideoDurations(videoIds){
+  const result = {};
+  for(const vid of videoIds){
+    result[vid] = await fetchSingleDuration(vid);
+  }
+  return result;
+}
+
 function regMarksHtml(){
   return `<span class="reg-mark reg-tl"></span><span class="reg-mark reg-tr"></span><span class="reg-mark reg-bl"></span><span class="reg-mark reg-br"></span>`;
 }
 
-// ---------- storage helpers ----------
 const LS_PREFIX = 'reestr_v2:'; 
 
 async function getReports(){
@@ -463,17 +591,67 @@ async function setSituations(reportId, obj){
 async function deleteSituationsFor(reportId){
   try{ localStorage.removeItem(LS_PREFIX + 'situations:' + reportId); }catch(e){}
 }
+async function getVideoLibrary(reportId){
+  try{
+    const raw = localStorage.getItem(LS_PREFIX + 'videos:' + reportId);
+    const list = raw ? JSON.parse(raw) : [];
+    return list.map(normalizeVideoEntry);
+  }catch(e){ console.error('read failed', e); return []; }
+}
+async function setVideoLibrary(reportId, list){
+  try{ localStorage.setItem(LS_PREFIX + 'videos:' + reportId, JSON.stringify(list)); }
+  catch(e){ console.error('write failed', e); showToast('Ошибка сохранения'); }
+}
+async function deleteVideoLibraryFor(reportId){
+  try{ localStorage.removeItem(LS_PREFIX + 'videos:' + reportId); }catch(e){}
+}
 
-// ---------- app state / routing ----------
+function normalizeVideoEntry(e){
+  if(typeof e === 'string') return { url: e, checked: false };
+  return { url: e.url, checked: !!e.checked };
+}
+
+
 let route = {view:'list'};
 const app = document.getElementById('app');
-let ytPlayer = null; // Глобальная переменная для плеера
+let ytPlayer = null; 
+let libPlayers = []; 
+let reportLibPlayers = []; 
+let pendingSegmentDraft = null; 
+
+
+function whenYTReady(cb){
+  if(typeof YT !== 'undefined' && typeof YT.Player !== 'undefined'){ cb(); return; }
+  let tries = 0;
+  const iv = setInterval(() => {
+    tries++;
+    if(typeof YT !== 'undefined' && typeof YT.Player !== 'undefined'){
+      clearInterval(iv);
+      cb();
+    } else if(tries > 50){
+      clearInterval(iv);
+      cb();
+    }
+  }, 200);
+}
 
 function nav(r){
-  // При уходе со страницы формы уничтожаем плеер, чтобы не было конфликтов
+
   if(ytPlayer && typeof ytPlayer.destroy === 'function'){
     try { ytPlayer.destroy(); } catch(e){}
     ytPlayer = null;
+  }
+  if(libPlayers.length){
+    libPlayers.forEach(p => { try{ if(p && typeof p.destroy === 'function') p.destroy(); }catch(e){} });
+    libPlayers = [];
+  }
+  if(reportLibPlayers.length){
+    reportLibPlayers.forEach(p => { try{ if(p && typeof p.destroy === 'function') p.destroy(); }catch(e){} });
+    reportLibPlayers = [];
+  }
+
+  if(!(r && r.view === 'situation-form')){
+    pendingSegmentDraft = null;
   }
   route = r; 
   render(); 
@@ -521,15 +699,16 @@ function breadcrumbsHtml(report, sub, formLabel){
   return `<div class="breadcrumbs">${parts.join('')}</div>`;
 }
 
-// ---------- render dispatch ----------
+
 async function render(){
   if(route.view === 'list') return renderList();
   if(route.view === 'report') return renderReport(route.id);
   if(route.view === 'section') return renderSection(route.id, route.sub);
   if(route.view === 'situation-form') return renderSituationForm(route.id, route.sub, route.sid);
+  if(route.view === 'video-list') return renderVideoList(route.id);
 }
 
-// ---------- LIST VIEW ----------
+
 async function renderList(){
   app.innerHTML = topbarHtml() + `<div class="loading">Загрузка…</div>`;
   const reports = await getReports();
@@ -623,7 +802,28 @@ function openNewReportModal(){
   });
 }
 
-// ---------- REPORT VIEW ----------
+function repVideoItemsHtml(library){
+  return library.map((item, idx) => `
+    <div class="lib-item ${item.checked ? 'is-checked' : ''}" data-idx="${idx}">
+      <div class="lib-item-head">
+        <a class="lib-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.url)}</a>
+        <button type="button" class="btn-check ${item.checked ? 'checked' : ''}" title="Отметить как проверенное" data-action="rep-toggle-check" data-idx="${idx}">${item.checked ? '✓ Проверено' : 'Проверить'}</button>
+      </div>
+      <div class="video-preview" id="rep-lib-player-${idx}">
+        <div class="placeholder"><div class="glyph">📺</div><div>Загрузка плеера…</div></div>
+      </div>
+      <div class="timecode-controls">
+        <button type="button" class="btn-timecode" id="rep-lib-tc-btn-${idx}" data-idx="${idx}" disabled>
+          <span>⏱</span> Отметить начало
+        </button>
+        <button type="button" class="btn-timecode btn-timecode-full" id="rep-lib-full-${idx}" data-idx="${idx}" disabled>
+          Целиком
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
 async function renderReport(reportId){
   app.innerHTML = topbarHtml() + `<div class="loading">Загрузка отчёта…</div>`;
   const reports = await getReports();
@@ -631,42 +831,74 @@ async function renderReport(reportId){
   if(!report){ nav({view:'list'}); return; }
   const sit = await getSituations(reportId);
   const totalSituations = SUBSECTIONS.reduce((sum,s) => sum + (sit[s]||[]).length, 0);
+  const videoLib = await getVideoLibrary(reportId);
 
-  app.innerHTML = topbarHtml() + breadcrumbsHtml(report, null) + `
-    <div class="titleblock-wrap">
-      <div class="titleblock on-paper">
-        ${regMarksHtml()}
-        <div class="code mono">ОТЧЁТ № ${report.code}</div>
-        <h2>${escapeHtml(report.title)}</h2>
-      </div>
-      <div class="stamp">
-        <div class="cell"><div class="lbl">Дата создания</div><div class="val">${formatDate(report.createdAt)}</div></div>
-        <div class="cell"><div class="lbl">Разделов</div><div class="val">${SUBSECTIONS.length}</div></div>
-        <div class="cell"><div class="lbl">Ситуаций всего</div><div class="val">${totalSituations}</div></div>
-        <div class="cell"><div class="lbl">Заполнено</div><div class="val">${SUBSECTIONS.filter(s=>(sit[s]||[]).length>0).length} / ${SUBSECTIONS.length}</div></div>
-        <div class="cell full"><div class="lbl">Действия</div><div class="val" style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn danger" style="padding:5px 10px; font-size:11px;" data-action="delete-report">Удалить отчёт</button><button class="btn solid" style="padding:5px 10px; font-size:11px;" data-action="copy-report">Копировать отчёт</button></div></div>
-      </div>
-    </div>
+  pendingSegmentDraft = null;
 
-    <div class="sub-grid">
-      ${SUBSECTIONS.map(s => {
-        const n = (sit[s]||[]).length;
-        return `
-        <div class="sub-card" data-nav="section" data-id="${report.id}" data-sub="${s}">
-          <div class="code">${s}</div>
-          <div class="count">${n>0 ? `<b>${n}</b> ${declineSituation(n)}` : 'нет ситуаций'}</div>
-        </div>`;
-      }).join('')}
+  app.innerHTML = `
+    <div class="sf-wrap">
+      <div class="sf-top">
+        <div class="sf-brand">
+          <div class="brand-mark"><span>Р</span></div>
+          ${breadcrumbsHtml(report, null)}
+        </div>
+        <div class="sf-title">
+          <h1>${escapeHtml(report.title)}</h1>
+          <p>Отчёт № ${report.code} • создан ${formatDate(report.createdAt)}</p>
+        </div>
+        <div class="sf-top-actions">
+          <button class="btn ghost" style="padding:8px 14px; font-size:12px;" data-action="video-list">Список видео (${videoLib.length})</button>
+          <button class="btn danger" style="padding:8px 14px; font-size:12px;" data-action="delete-report">Удалить</button>
+          <button class="btn solid" style="padding:8px 14px; font-size:12px;" data-action="copy-report">Копировать</button>
+        </div>
+      </div>
+
+      <div class="sf-split">
+        <div class="sf-pane sf-pane-left">
+          ${regMarksHtml()}
+          <div class="stamp" style="width:100%; margin-bottom:22px;">
+            <div class="cell"><div class="lbl">Дата создания</div><div class="val">${formatDate(report.createdAt)}</div></div>
+            <div class="cell"><div class="lbl">Разделов</div><div class="val">${SUBSECTIONS.length}</div></div>
+            <div class="cell"><div class="lbl">Ситуаций всего</div><div class="val">${totalSituations}</div></div>
+            <div class="cell"><div class="lbl">Заполнено</div><div class="val">${SUBSECTIONS.filter(s=>(sit[s]||[]).length>0).length} / ${SUBSECTIONS.length}</div></div>
+          </div>
+          <div id="pending-banner"></div>
+          <div class="sub-grid" id="sub-grid">
+            ${SUBSECTIONS.map(s => {
+              const n = (sit[s]||[]).length;
+              return `
+              <div class="sub-card" data-sub="${s}">
+                <div class="code">${s}</div>
+                <div class="count">${n>0 ? `<b>${n}</b> ${declineSituation(n)}` : 'нет ситуаций'}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+
+        <div class="sf-pane sf-pane-right">
+          <h3>Быстрая разметка по видео (${videoLib.length})</h3>
+          ${videoLib.length ? repVideoItemsHtml(videoLib) : `
+            <div class="empty" style="padding:26px 12px;">
+              <p style="margin:0 0 14px;">Список видео отчёта пуст. Добавьте туда ссылки, чтобы находить моменты прямо здесь.</p>
+              <button class="btn ghost" data-action="go-video-list-quick" style="width:100%; font-size:12px;">Перейти к списку видео</button>
+            </div>`}
+        </div>
+      </div>
     </div>
   `;
 
   bindNavHandlers();
   
-  // Кнопка копирования отчета
   const copyBtn = app.querySelector('[data-action="copy-report"]');
   copyBtn.addEventListener('click', async () => {
     await renderCopyReportView(reportId, report);
   });
+
+  const videoListBtn = app.querySelector('[data-action="video-list"]');
+  videoListBtn.addEventListener('click', () => nav({view:'video-list', id: reportId}));
+
+  const goVideoListQuickBtn = app.querySelector('[data-action="go-video-list-quick"]');
+  if(goVideoListQuickBtn) goVideoListQuickBtn.addEventListener('click', () => nav({view:'video-list', id: reportId}));
   
   const delBtn = app.querySelector('[data-action="delete-report"]');
   delBtn.addEventListener('click', async () => {
@@ -674,8 +906,158 @@ async function renderReport(reportId){
     const updated = (await getReports()).filter(r => r.id !== report.id);
     await setReports(updated);
     await deleteSituationsFor(report.id);
+    await deleteVideoLibraryFor(report.id);
     showToast('Отчёт удалён');
     nav({view:'list'});
+  });
+
+  function renderPendingBanner(){
+    const bannerEl = app.querySelector('#pending-banner');
+    const subGridEl = app.querySelector('#sub-grid');
+    if(!bannerEl) return;
+    if(!pendingSegmentDraft){
+      bannerEl.innerHTML = '';
+      if(subGridEl) subGridEl.classList.remove('armed');
+      return;
+    }
+    const timeLabel = (pendingSegmentDraft.start != null && pendingSegmentDraft.end != null)
+      ? `${formatTime(pendingSegmentDraft.start)}–${formatTime(pendingSegmentDraft.end)}`
+      : 'весь ролик';
+    bannerEl.innerHTML = `
+      <div class="pending-banner">
+        <div>
+          <div class="pending-banner-title">Отрезок отмечен: <span class="mono">${timeLabel}</span></div>
+          <div class="pending-banner-sub">Нажмите на раздел ниже — форма откроется сразу с этим отрезком, останется вписать данные</div>
+        </div>
+        <button type="button" class="icon-btn danger" title="Отменить" data-action="cancel-pending">✕</button>
+      </div>`;
+    if(subGridEl) subGridEl.classList.add('armed');
+    bannerEl.querySelector('[data-action="cancel-pending"]').addEventListener('click', () => {
+      pendingSegmentDraft = null;
+      renderPendingBanner();
+    });
+  }
+  renderPendingBanner();
+
+  app.querySelectorAll('.sub-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const s = card.dataset.sub;
+      if(pendingSegmentDraft){
+        const draft = pendingSegmentDraft;
+        pendingSegmentDraft = null;
+        nav({view:'situation-form', id: reportId, sub: s, sid: null, prefillDraft: draft});
+      } else {
+        nav({view:'section', id: reportId, sub: s});
+      }
+    });
+  });
+
+  function setPendingSegment(seg){
+    pendingSegmentDraft = { id: uid(), url: seg.url, start: seg.start, end: seg.end };
+    renderPendingBanner();
+    showToast('Отрезок отмечен — выберите раздел 7.1–7.10 слева');
+  }
+
+
+  const repLibState = {};
+
+  function resetRepLibSelection(idx){
+    const st = repLibState[idx];
+    if(st){ st.start = null; }
+    const tcBtn = app.querySelector(`#rep-lib-tc-btn-${idx}`);
+    if(tcBtn){ tcBtn.innerHTML = '<span>⏱</span> Отметить начало'; tcBtn.classList.remove('active'); tcBtn.disabled = !(st && st.player); }
+  }
+
+  function initRepLibPlayer(idx, url){
+    const vid = youtubeId(url);
+    const playerHost = app.querySelector(`#rep-lib-player-${idx}`);
+    if(!playerHost) return;
+
+    if(!vid){
+      playerHost.innerHTML = `<div class="placeholder"><div class="glyph">⚠️</div><div>Некорректная ссылка</div></div>`;
+      return;
+    }
+    if(typeof YT === 'undefined' || typeof YT.Player === 'undefined'){
+      playerHost.innerHTML = `<div class="placeholder"><div class="glyph">⚠️</div><div>YouTube API не загружен</div></div>`;
+      return;
+    }
+
+    playerHost.innerHTML = '';
+    repLibState[idx] = repLibState[idx] || {};
+    repLibState[idx].start = null;
+    resetRepLibSelection(idx);
+
+    try{
+      const player = new YT.Player(`rep-lib-player-${idx}`, {
+        height: '100%', width: '100%', videoId: vid,
+        playerVars: { playsinline: 1, modestbranding: 1, rel: 0 },
+        events: {
+          onReady: function(){
+            const tcBtn = app.querySelector(`#rep-lib-tc-btn-${idx}`);
+            if(tcBtn) tcBtn.disabled = false;
+            const fullBtn = app.querySelector(`#rep-lib-full-${idx}`);
+            if(fullBtn) fullBtn.disabled = false;
+          },
+          onError: function(e){ console.warn('YT rep-lib error', e.data); }
+        }
+      });
+      repLibState[idx].player = player;
+      reportLibPlayers.push(player);
+    }catch(e){
+      console.error('YT rep-lib init error', e);
+      playerHost.innerHTML = `<div class="placeholder"><div class="glyph">⚠️</div><div>Ошибка инициализации плеера</div></div>`;
+    }
+  }
+
+  whenYTReady(() => {
+    videoLib.forEach((item, idx) => initRepLibPlayer(idx, item.url));
+  });
+
+  videoLib.forEach((item, idx) => {
+    const tcBtn = app.querySelector(`#rep-lib-tc-btn-${idx}`);
+    const fullBtn = app.querySelector(`#rep-lib-full-${idx}`);
+    if(!tcBtn) return;
+    tcBtn.addEventListener('click', () => {
+      const st = repLibState[idx];
+      if(!st || !st.player || typeof st.player.getCurrentTime !== 'function'){
+        showToast('Плеер ещё не готов');
+        return;
+      }
+      const currentTime = st.player.getCurrentTime();
+      if(st.start == null){
+        st.start = currentTime;
+        tcBtn.innerHTML = `<span>⏱</span> Начало: ${formatTime(currentTime)}. Отметить конец`;
+        tcBtn.classList.add('active');
+      } else {
+        const start = Math.min(st.start, currentTime);
+        const end = Math.max(st.start, currentTime);
+        setPendingSegment({ url: item.url, start, end });
+        resetRepLibSelection(idx);
+      }
+    });
+
+    if(fullBtn){
+      fullBtn.addEventListener('click', () => {
+        setPendingSegment({ url: item.url, start: null, end: null });
+      });
+    }
+  });
+
+  app.querySelectorAll('[data-action="rep-toggle-check"]').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const idx = parseInt(btn.dataset.idx, 10);
+      const current = await getVideoLibrary(reportId);
+      if(!current[idx]) return;
+      current[idx].checked = !current[idx].checked;
+      await setVideoLibrary(reportId, current);
+      videoLib[idx].checked = current[idx].checked;
+      const itemEl = btn.closest('.lib-item');
+      if(itemEl) itemEl.classList.toggle('is-checked', current[idx].checked);
+      btn.classList.toggle('checked', current[idx].checked);
+      btn.textContent = current[idx].checked ? '✓ Проверено' : 'Проверить';
+      showToast(current[idx].checked ? 'Видео отмечено как проверенное' : 'Отметка снята');
+    });
   });
 }
 
@@ -685,6 +1067,154 @@ function declineSituation(n){
   if(mod10 === 1) return 'ситуация';
   if(mod10 >= 2 && mod10 <= 4) return 'ситуации';
   return 'ситуаций';
+}
+
+function declineSegment(n){
+  const mod100 = n % 100, mod10 = n % 10;
+  if(mod100 >= 11 && mod100 <= 14) return 'отрезков';
+  if(mod10 === 1) return 'отрезок';
+  if(mod10 >= 2 && mod10 <= 4) return 'отрезка';
+  return 'отрезков';
+}
+
+// Приводит ситуацию (новую с segments, либо старую с url/description) к единому массиву отрезков
+function situationSegments(s){
+  if(s && Array.isArray(s.segments) && s.segments.length) return s.segments;
+  const desc = (s && s.description) || '';
+  // Старый формат мог содержать встроенную временную ссылку вида:
+  // https://youtu.be/ID?t=NNN до MM:SS - комментарий
+  const tcMatch = desc.match(/(https:\/\/youtu\.be\/[A-Za-z0-9_-]+\?t=(\d+))\s+до\s+(\d+:\d+)/);
+  if(tcMatch){
+    const commentPart = desc.split(/до\s+\d+:\d+\s*-\s*/)[1] || '';
+    const vid = youtubeId(tcMatch[1]);
+    const startSec = parseInt(tcMatch[2], 10);
+    const endParts = tcMatch[3].split(':').map(Number);
+    const endSec = endParts.length === 2 ? endParts[0]*60 + endParts[1] : endParts[0];
+    return [{ id:'legacy', url: vid ? `https://youtu.be/${vid}` : (s.url||''), start:startSec, end:endSec, comment: commentPart.trim() }];
+  }
+  return [{ id:'legacy', url: (s && s.url) || '', start:null, end:null, comment: desc }];
+}
+
+// ---------- VIDEO LIBRARY (список видео отчёта) ----------
+async function renderVideoList(reportId){
+  app.innerHTML = topbarHtml() + `<div class="loading">Загрузка списка видео…</div>`;
+  const reports = await getReports();
+  const report = reports.find(r => r.id === reportId);
+  if(!report){ nav({view:'list'}); return; }
+  const library = await getVideoLibrary(reportId);
+  const checkedCount = library.filter(v => v.checked).length;
+
+  app.innerHTML = topbarHtml() + breadcrumbsHtml(report, null, 'Список видео') + `
+    <div class="form-page" style="max-width:820px;">
+      <div class="page-head">
+        <div>
+          <h1>Список видео отчёта</h1>
+          <p>${escapeHtml(report.title)} • эти видео будут доступны при добавлении ситуаций во всех разделах</p>
+        </div>
+      </div>
+
+      <div class="form-card">
+        ${regMarksHtml()}
+        <div class="field" style="margin-bottom:14px;">
+          <label>Добавить ссылки (каждая — с новой строки)</label>
+          <textarea id="vl-input" rows="5" placeholder="https://www.youtube.com/watch?v=...&#10;https://youtu.be/..."></textarea>
+          <div class="err" id="vl-err">Не найдено ни одной корректной ссылки на YouTube</div>
+        </div>
+        <button class="btn solid" data-action="vl-add">+ Добавить в список</button>
+      </div>
+
+      <div class="page-head" style="margin-top:30px; margin-bottom:16px;">
+        <div><h1 style="font-size:18px;">В списке: ${library.length}</h1><p>Проверено: ${checkedCount} / ${library.length}</p></div>
+      </div>
+      <div id="vl-list" class="sit-list">${renderVideoLibraryItems(library)}</div>
+
+      <div class="form-footer">
+        <button class="btn ghost" data-action="back-to-report">Назад к отчёту</button>
+      </div>
+    </div>
+  `;
+
+  bindNavHandlers();
+  app.querySelector('[data-action="back-to-report"]').addEventListener('click', () => nav({view:'report', id: reportId}));
+  bindVideoLibraryRemoveHandlers(reportId);
+  bindVideoLibraryCheckHandlers(reportId);
+
+  app.querySelector('[data-action="vl-add"]').addEventListener('click', async () => {
+    const raw = app.querySelector('#vl-input').value;
+    const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+    const current = await getVideoLibrary(reportId);
+    const seen = new Set(current.map(v => youtubeId(v.url)).filter(Boolean));
+    let added = 0;
+    for(const line of lines){
+      const vid = youtubeId(line);
+      if(vid && !seen.has(vid)){
+        seen.add(vid);
+        current.push({ url: line, checked: false });
+        added++;
+      }
+    }
+    if(added === 0){
+      app.querySelector('#vl-err').style.display = 'block';
+      return;
+    }
+    app.querySelector('#vl-err').style.display = 'none';
+    await setVideoLibrary(reportId, current);
+    showToast(`Добавлено видео: ${added}`);
+    renderVideoList(reportId);
+  });
+}
+
+function renderVideoLibraryItems(library){
+  if(!library.length){
+    return `<div class="empty"><div class="display">Список пуст</div><p>Вставьте ссылки на YouTube-видео выше — они появятся здесь и будут доступны в панели при добавлении ситуаций.</p></div>`;
+  }
+  return library.map((item, idx) => {
+    const vid = youtubeId(item.url);
+    const thumb = vid ? `https://img.youtube.com/vi/${vid}/hqdefault.jpg` : '';
+    return `
+    <div class="sit-card ${item.checked ? 'is-checked' : ''}">
+      <a class="sit-thumb" style="${thumb ? `background-image:url('${thumb}')` : ''}" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">
+        <span class="play">▶</span>
+      </a>
+      <div class="sit-body">
+        <a class="sit-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.url)}</a>
+        ${item.checked ? `<span class="checked-badge" style="margin-top:8px;">✓ Проверено</span>` : ''}
+      </div>
+      <div class="sit-actions">
+        <div class="card-actions-row">
+          <button class="btn-check ${item.checked ? 'checked' : ''}" title="Отметить как проверенное" data-action="vl-toggle-check" data-idx="${idx}">${item.checked ? '✓ Проверено' : 'Проверить'}</button>
+          <button class="icon-btn danger" title="Удалить из списка" data-action="vl-remove" data-idx="${idx}">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function bindVideoLibraryRemoveHandlers(reportId){
+  app.querySelectorAll('[data-action="vl-remove"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const idx = parseInt(btn.dataset.idx, 10);
+      const current = await getVideoLibrary(reportId);
+      current.splice(idx, 1);
+      await setVideoLibrary(reportId, current);
+      showToast('Видео удалено из списка');
+      renderVideoList(reportId);
+    });
+  });
+}
+
+function bindVideoLibraryCheckHandlers(reportId){
+  app.querySelectorAll('[data-action="vl-toggle-check"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const idx = parseInt(btn.dataset.idx, 10);
+      const current = await getVideoLibrary(reportId);
+      if(!current[idx]) return;
+      current[idx].checked = !current[idx].checked;
+      await setVideoLibrary(reportId, current);
+      showToast(current[idx].checked ? 'Видео отмечено как проверенное' : 'Отметка снята');
+      renderVideoList(reportId);
+    });
+  });
 }
 
 // ---------- COPY REPORT VIEW ----------
@@ -733,34 +1263,82 @@ async function renderCopyReportView(reportId, report){
   
   // Формируем текст отчёта
   const sitData = await getSituations(reportId);
+  const library = await getVideoLibrary(reportId);
   let reportText = '';
-  
+  const seenVideoIdsFromSituations = new Set();
+  const uniqueVideosFromSituations = [];
+
   for(const sub of SUBSECTIONS){
     const list = (sitData[sub] || []).slice().sort((a,b)=>a.createdAt - b.createdAt);
     if(list.length > 0){
       reportText += `${sub}:\n`;
       for(const s of list){
-        const vid = youtubeId(s.url);
-        let timecodeLink = '';
-        
-        // Проверяем, есть ли в описании временная ссылка (формат: https://youtu.be/...?t=XXX до MM:SS)
-        const tcMatch = s.description.match(/(https:\/\/youtu\.be\/[A-Za-z0-9_-]+\?t=\d+)\s+до\s+(\d+:\d+)/);
-        if(tcMatch){
-          timecodeLink = tcMatch[1];
-          const endTime = tcMatch[2];
-          // Извлекаем комментарий (всё что после "до MM:SS - ")
-          const commentPart = s.description.split(/до\s+\d+:\d+\s*-\s*/)[1] || '';
-          reportText += `${timecodeLink} до ${endTime} - ${commentPart}\n`;
-        } else {
-          // Если нет временной ссылки, используем обычную ссылку и описание
-          reportText += `${s.url} - ${s.description}\n`;
+        const segs = situationSegments(s);
+        for(const sg of segs){
+          const vid = youtubeId(sg.url);
+          if(sg.start != null && sg.end != null){
+            const linkBase = vid ? `https://youtu.be/${vid}` : sg.url;
+            reportText += `${linkBase}?t=${Math.floor(sg.start)} до ${formatTime(sg.end)} - ${sg.comment || ''}\n`;
+          } else {
+            reportText += `${sg.url} - ${sg.comment || ''}\n`;
+          }
+          if(vid && !seenVideoIdsFromSituations.has(vid)){
+            seenVideoIdsFromSituations.add(vid);
+            uniqueVideosFromSituations.push({ vid, url: `https://youtu.be/${vid}` });
+          }
         }
       }
       reportText += '\n';
     }
   }
-  
-  app.querySelector('#report-output').value = reportText.trim();
+
+  // Для общего списка видео приоритет — список видео отчёта; если он пуст, берём видео из ситуаций
+  let uniqueVideos = [];
+  if(library.length){
+    const seen = new Set();
+    for(const item of library){
+      const vid = youtubeId(item.url);
+      if(vid && !seen.has(vid)){
+        seen.add(vid);
+        uniqueVideos.push({ vid, url: item.url, checked: !!item.checked });
+      }
+    }
+  } else {
+    uniqueVideos = uniqueVideosFromSituations;
+  }
+
+  const outputArea = app.querySelector('#report-output');
+  const copyBtn = app.querySelector('[data-action="copy-to-clipboard"]');
+  outputArea.value = reportText.trim();
+
+  if(uniqueVideos.length === 0){
+    return;
+  }
+
+  // Пока считаем длительности — блокируем копирование, чтобы не унести неполный текст
+  copyBtn.disabled = true;
+  outputArea.value = reportText.trim() + '\n\n---\nПодсчёт длительности видео…';
+
+  const durations = await fetchVideoDurations(uniqueVideos.map(v => v.vid));
+
+  let listBlock = 'ОБЩИЙ СПИСОК ВИДЕО:\n';
+  let totalSeconds = 0;
+  let anyUnknown = false;
+  for(const v of uniqueVideos){
+    const d = durations[v.vid];
+    if(typeof d === 'number' && isFinite(d) && d > 0){
+      totalSeconds += d;
+      listBlock += `${v.url} [${formatDurationLong(d)}]\n`;
+    } else {
+      anyUnknown = true;
+      listBlock += `${v.url} [длительность не определена]\n`;
+    }
+  }
+  listBlock += `\nОбщая длительность всех видео: ${formatDurationLong(totalSeconds)}${anyUnknown ? ' (без учёта видео с неопределённой длительностью)' : ''}`;
+
+  reportText = reportText.trim() + '\n\n' + listBlock;
+  outputArea.value = reportText;
+  copyBtn.disabled = false;
 }
 
 // ---------- SECTION (SITUATIONS) VIEW ----------
@@ -773,17 +1351,24 @@ async function renderSection(reportId, sub){
   const list = (sitData[sub] || []).slice().sort((a,b)=>b.createdAt - a.createdAt);
 
   const cards = list.length ? list.map(s => {
-    const yid = youtubeId(s.url);
+    const segs = situationSegments(s);
+    const primaryUrl = segs[0].url;
+    const yid = youtubeId(primaryUrl);
     const thumb = yid ? `https://img.youtube.com/vi/${yid}/hqdefault.jpg` : '';
+    const uniqueLinks = [...new Set(segs.map(sg => sg.url).filter(Boolean))];
+    const descHtml = segs.map(sg => {
+      const timeLabel = (sg.start != null && sg.end != null) ? `<span class="mono" style="color:var(--accent-2);">${formatTime(sg.start)}–${formatTime(sg.end)}</span> ` : '';
+      return `${timeLabel}${escapeHtml(sg.comment || '')}`;
+    }).join('<br>');
     return `
     <div class="sit-card">
-      <a class="sit-thumb" style="${thumb ? `background-image:url('${thumb}')` : ''}" href="${escapeHtml(s.url)}" target="_blank" rel="noopener">
+      <a class="sit-thumb" style="${thumb ? `background-image:url('${thumb}')` : ''}" href="${escapeHtml(primaryUrl)}" target="_blank" rel="noopener">
         <span class="play">▶</span>
       </a>
       <div class="sit-body">
-        <div class="sit-meta">Добавлено ${formatDate(s.createdAt)}</div>
-        <div class="sit-desc">${escapeHtml(s.description)}</div>
-        <a class="sit-link" href="${escapeHtml(s.url)}" target="_blank" rel="noopener">${escapeHtml(s.url)}</a>
+        <div class="sit-meta">Добавлено ${formatDate(s.createdAt)} • ${segs.length} ${declineSegment(segs.length)}</div>
+        <div class="sit-desc">${descHtml}</div>
+        ${uniqueLinks.map(u => `<a class="sit-link" href="${escapeHtml(u)}" target="_blank" rel="noopener">${escapeHtml(u)}</a>`).join('')}
       </div>
       <div class="sit-actions">
         <div class="card-actions-row">
@@ -795,7 +1380,7 @@ async function renderSection(reportId, sub){
   }).join('') : `
     <div class="empty">
       <div class="display">В разделе ${sub} пока пусто</div>
-      <p>Добавьте первую ситуацию: укажите ссылку на видео на YouTube и опишите, что происходит.</p>
+      <p>Добавьте первую ситуацию: выберите отрезки из списка видео отчёта на панели справа.</p>
       <button class="btn solid" data-action="new-sit">+ Добавить ситуацию</button>
     </div>`;
 
@@ -831,10 +1416,14 @@ async function renderSection(reportId, sub){
   });
 }
 
-// ---------- SITUATION FORM (FULL PAGE) ----------
+// ---------- SITUATION FORM (FULL PAGE, панель со списком видео) ----------
 async function renderSituationForm(reportId, sub, sid){
   app.innerHTML = topbarHtml() + `<div class="loading">Загрузка формы…</div>`;
-  
+
+  // Отрезок, отмеченный на экране отчёта (быстрая разметка) и переданный сюда для завершения
+  const prefillDraft = route.prefillDraft || null;
+  if(route.prefillDraft) delete route.prefillDraft;
+
   const reports = await getReports();
   const report = reports.find(r => r.id === reportId);
   if(!report){ nav({view:'list'}); return; }
@@ -847,263 +1436,327 @@ async function renderSituationForm(reportId, sub, sid){
 
   const isEdit = !!existing;
   const pageTitle = isEdit ? `Редактирование ситуации` : `Новая ситуация`;
+  const library = await getVideoLibrary(reportId);
 
-  app.innerHTML = topbarHtml() + breadcrumbsHtml(report, sub, pageTitle) + `
-    <div class="form-page">
-      <div class="page-head">
-        <div>
+  // Текущие отрезки ситуации (в памяти до сохранения)
+  let segments = isEdit
+    ? situationSegments(existing).map(sg => ({
+        id: (sg.id && sg.id !== 'legacy') ? sg.id : uid(),
+        url: sg.url, start: sg.start, end: sg.end, comment: sg.comment || ''
+      }))
+    : [];
+
+  const libraryItemsHtml = library.map((item, idx) => `
+    <div class="lib-item ${item.checked ? 'is-checked' : ''}" data-idx="${idx}">
+      <div class="lib-item-head">
+        <a class="lib-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.url)}</a>
+        <button type="button" class="btn-check ${item.checked ? 'checked' : ''}" title="Отметить как проверенное" data-action="sf-toggle-check" data-idx="${idx}">${item.checked ? '✓ Проверено' : 'Проверить'}</button>
+      </div>
+      <div class="video-preview" id="lib-player-${idx}">
+        <div class="placeholder"><div class="glyph">📺</div><div>Загрузка плеера…</div></div>
+      </div>
+      <div class="timecode-controls">
+        <button type="button" class="btn-timecode" id="lib-tc-btn-${idx}" data-idx="${idx}" disabled>
+          <span>⏱</span> Отметить начало
+        </button>
+        <button type="button" class="btn-timecode btn-timecode-full" id="lib-full-${idx}" data-idx="${idx}" disabled>
+          Целиком
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  app.innerHTML = `
+    <div class="sf-wrap">
+      <div class="sf-top">
+        <div class="sf-brand">
+          <div class="brand-mark"><span>Р</span></div>
+          ${breadcrumbsHtml(report, sub, pageTitle)}
+        </div>
+        <div class="sf-title">
           <h1>${pageTitle}</h1>
           <p>Раздел ${sub} • ${escapeHtml(report.title)}</p>
         </div>
+        <div class="sf-top-actions">
+          <button class="btn ghost" data-action="cancel-form">Отмена</button>
+          <button class="btn solid" data-action="save-form">${isEdit ? 'Сохранить изменения' : 'Добавить ситуацию'}</button>
+        </div>
       </div>
 
-      <div class="form-card">
-        ${regMarksHtml()}
-        <div class="field">
-          <label>Ссылка на YouTube</label>
-          <input type="text" id="f-url" placeholder="https://www.youtube.com/watch?v=..." value="${isEdit ? escapeHtml(existing.url) : ''}">
-          <div class="err" id="f-url-err">Некорректная ссылка на YouTube</div>
-          
-          <!-- VIDEO WIDGET CONTAINER -->
-          <div class="video-widget-wrap">
-             <div id="video-container" class="video-preview">
-                <div class="placeholder">
-                  <div class="glyph">📺</div>
-                  <div>Вставьте ссылку выше,<br>чтобы увидеть превью</div>
-                </div>
-             </div>
-             <div id="video-status" class="video-status" style="display:none;"></div>
-             
-             <!-- TIMECODE BUTTON -->
-             <div class="timecode-controls" id="tc-controls" style="display:none;">
-               <button type="button" id="btn-timecode" class="btn-timecode" disabled>
-                 <span>⏱</span> Выбрать временной диапазон
-               </button>
-             </div>
-             <div class="timecode-output" id="timecode-output"></div>
+      <div class="sf-split">
+        <div class="sf-pane sf-pane-left">
+          ${regMarksHtml()}
+          <div class="field" id="draft-section" style="margin-bottom:22px; display:none;">
+            <label>Черновики — впишите комментарий и подтвердите</label>
+            <div class="draft-list" id="draft-list"></div>
+          </div>
+          <div class="field" style="margin-bottom:8px;">
+            <label>Отрезки в этой ситуации</label>
+            <div class="seg-list" id="seg-list"></div>
+            <div class="err" id="f-seg-err">Добавьте хотя бы один отрезок из панели справа</div>
           </div>
         </div>
 
-        <div class="field">
-          <label>Описание ситуации</label>
-          <textarea id="f-desc" rows="8" placeholder="Опишите, что происходит на видео...">${isEdit ? escapeHtml(existing.description) : ''}</textarea>
-          <div class="err" id="f-desc-err">Введите описание</div>
-        </div>
-
-        <div class="form-footer">
-          <button class="btn ghost" data-action="cancel-form">Отмена</button>
-          <button class="btn solid" data-action="save-form">${isEdit ? 'Сохранить изменения' : 'Добавить ситуацию'}</button>
+        <div class="sf-pane sf-pane-right">
+          <h3>Видео из списка отчёта (${library.length}) — плееры загружены</h3>
+          ${library.length ? libraryItemsHtml : `
+            <div class="empty" style="padding:26px 12px;">
+              <p style="margin:0 0 14px;">Список видео отчёта пуст. Добавьте туда ссылки, чтобы они появились здесь.</p>
+              <button class="btn ghost" data-action="go-video-list" style="width:100%; font-size:12px;">Перейти к списку видео</button>
+            </div>
+          `}
         </div>
       </div>
     </div>
   `;
 
   bindNavHandlers();
-  
+
   // Cancel button logic
   app.querySelector('[data-action="cancel-form"]').addEventListener('click', () => {
-    nav({view:'section', id: reportId, sub: sub});
+    nav({view:'report', id: reportId});
   });
 
-  // --- Video Widget Logic with Timecode Support ---
-  const urlInput = app.querySelector('#f-url');
-  const videoContainer = app.querySelector('#video-container');
-  const videoStatus = app.querySelector('#video-status');
-  const tcControls = app.querySelector('#tc-controls');
-  const btnTimecode = app.querySelector('#btn-timecode');
-  const timecodeOutput = app.querySelector('#timecode-output');
-  const descArea = app.querySelector('#f-desc');
+  const goVideoListBtn = app.querySelector('[data-action="go-video-list"]');
+  if(goVideoListBtn) goVideoListBtn.addEventListener('click', () => nav({view:'video-list', id: reportId}));
 
-  // State for timecode selection
-  let startTime = null;
-  let isSelectingRange = false;
-  let currentVideoId = null;
-
-  function resetTimecodeButton() {
-    startTime = null;
-    isSelectingRange = false;
-    btnTimecode.innerHTML = '<span>⏱</span> Выбрать временной диапазон';
-    btnTimecode.classList.remove('active');
-    btnTimecode.disabled = false;
-    timecodeOutput.classList.remove('visible');
-    timecodeOutput.textContent = '';
+  // ---------- Черновики (справа выбрали время/видео целиком — комментарий пишется здесь) ----------
+  let drafts = [];
+  if(prefillDraft){
+    drafts.push({ id: prefillDraft.id || uid(), url: prefillDraft.url, start: prefillDraft.start, end: prefillDraft.end, comment: '' });
   }
 
-  // Обработчик кнопки таймкода
-  btnTimecode.addEventListener('click', () => {
-    if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') {
-      showToast('Плеер еще не готов');
-      return;
+  // ---------- Сохранение ситуации (используется и кнопкой "Сохранить", и подтверждением отрезка) ----------
+  async function saveSituation(){
+    if(!segments.length){
+      app.querySelector('#f-seg-err').style.display = 'block';
+      return false;
     }
-
-    const currentTime = ytPlayer.getCurrentTime();
-    const formatted = formatTime(currentTime);
-
-    if (!isSelectingRange) {
-      // Первое нажатие: фиксируем начало
-      startTime = currentTime;
-      isSelectingRange = true;
-      btnTimecode.innerHTML = `<span>⏱</span> Зафиксировано начало: ${formatted}. Нажмите для завершения`;
-      btnTimecode.classList.add('active');
-    } else {
-      // Второе нажатие: фиксируем конец и показываем ссылку
-      const endTime = currentTime;
-      const startSeconds = Math.floor(startTime);
-      const endSeconds = Math.floor(endTime);
-      const endFormatted = formatTime(endSeconds);
-      
-      // Формируем ссылку с параметром времени начала
-      const videoUrl = `https://youtu.be/${currentVideoId}?t=${startSeconds}`;
-      
-      // Показываем ссылку отдельно от комментария
-      timecodeOutput.textContent = `${videoUrl} до ${endFormatted}`;
-      timecodeOutput.classList.add('visible');
-      
-      // Блокируем кнопку после использования (только 1 раз в ситуации)
-      btnTimecode.disabled = true;
-      btnTimecode.innerHTML = '<span>⏱</span> Диапазон выбран';
-      
-      showToast('Диапазон времени зафиксирован');
-    }
-  });
-
-  function mountYouTubeEmbed(vid){
-    // Очищаем контейнер
-    videoContainer.innerHTML = '<div id="yt-player-target"></div>';
-    
-    // Показываем контролы таймкода
-    tcControls.style.display = 'flex';
-    resetTimecodeButton();
-
-    videoStatus.style.display = 'flex';
-    videoStatus.className = 'video-status ok';
-    videoStatus.innerHTML = `<a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener" style="color:inherit;">открыть на YouTube ↗</a>`;
-
-    // Создаем или пересоздаем плеер
-    // Важно: YT.Player требует существующий DOM элемент
-    if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
-      videoStatus.className = 'video-status bad';
-      videoStatus.textContent = 'YouTube API не загружен (проверьте блокировщики)';
-      tcControls.style.display = 'none';
-      return;
-    }
-
-    try {
-      if(ytPlayer) {
-        try{ ytPlayer.destroy(); }catch(e){}
-      }
-      
-      currentVideoId = vid;
-      
-      ytPlayer = new YT.Player('yt-player-target', {
-        height: '100%',
-        width: '100%',
-        videoId: vid,
-        playerVars: {
-          'playsinline': 1,
-          'modestbranding': 1,
-          'rel': 0
-        },
-        events: {
-          'onReady': function(event) {
-            // Плеер готов, кнопка активна
-            btnTimecode.disabled = false;
-          },
-          'onError': function(event) {
-             console.warn('YT Error', event.data);
-             // Ошибки могут возникать даже при рабочем видео в некоторых окружениях,
-             // поэтому не скрываем кнопку сразу, но можно добавить лог.
-          }
-        }
-      });
-    } catch(e) {
-      console.error("YT Init Error", e);
-      videoStatus.className = 'video-status bad';
-      videoStatus.textContent = 'Ошибка инициализации плеера';
-      tcControls.style.display = 'none';
-    }
-  }
-
-  function updateVideoWidget(urlVal){
-    const vid = youtubeId(urlVal);
-    if(vid){
-      mountYouTubeEmbed(vid);
-      app.querySelector('#f-url-err').style.display = 'none';
-    } else {
-      // Сброс если URL невалидный
-      if(ytPlayer && typeof ytPlayer.destroy === 'function'){
-         try{ ytPlayer.destroy(); }catch(e){}
-         ytPlayer = null;
-      }
-      currentVideoId = null;
-      resetTimecodeButton();
-      tcControls.style.display = 'none';
-      
-      if(urlVal.trim().length > 5){
-         videoContainer.innerHTML = `<div class="placeholder"><div class="glyph">⚠️</div><div>Не удалось распознать видео</div></div>`;
-         videoStatus.style.display = 'flex';
-         videoStatus.className = 'video-status bad';
-         videoStatus.textContent = 'Проверьте формат ссылки';
-      } else {
-         videoContainer.innerHTML = `<div class="placeholder"><div class="glyph">📺</div><div>Вставьте ссылку выше,<br>чтобы увидеть превью</div></div>`;
-         videoStatus.style.display = 'none';
-      }
-    }
-  }
-
-  // Initial check if editing
-  if(isEdit && existing.url) updateVideoWidget(existing.url);
-
-  // Listen for input changes
-  urlInput.addEventListener('input', (e) => {
-    updateVideoWidget(e.target.value);
-  });
-
-  // Save Logic
-  app.querySelector('[data-action="save-form"]').addEventListener('click', async () => {
-    const url = urlInput.value.trim();
-    let desc = descArea.value.trim();
-    let valid = true;
-
-    if(!url || !youtubeId(url)){
-      app.querySelector('#f-url-err').style.display = 'block';
-      valid = false;
-    } else {
-      app.querySelector('#f-url-err').style.display = 'none';
-    }
-
-    if(!desc){
-      app.querySelector('#f-desc-err').style.display = 'block';
-      valid = false;
-    } else {
-      app.querySelector('#f-desc-err').style.display = 'none';
-    }
-
-    if(!valid) return;
-
-    // Если была выбрана временная ссылка, добавляем её в начало описания
-    const timecodeText = timecodeOutput.textContent.trim();
-    if(timecodeText && !desc.startsWith(timecodeText)){
-      // Добавляем временную ссылку в начало описания с датой видео
-      const videoDate = formatDate(Date.now());
-      desc = `${videoDate}: ${timecodeText} - ${desc}`;
-    }
+    app.querySelector('#f-seg-err').style.display = 'none';
 
     const data = await getSituations(reportId);
     if(!data[sub]) data[sub] = [];
 
+    const situationRecord = {
+      id: isEdit ? existing.id : uid(),
+      createdAt: isEdit ? existing.createdAt : Date.now(),
+      segments: segments.map(sg => ({ id: sg.id, url: sg.url, start: sg.start, end: sg.end, comment: sg.comment }))
+    };
+
     if(isEdit){
       const idx = data[sub].findIndex(s => s.id === existing.id);
-      if(idx > -1) data[sub][idx] = {...existing, url, description: desc};
+      if(idx > -1) data[sub][idx] = situationRecord;
+      else data[sub].push(situationRecord);
     } else {
-      data[sub].push({ id: uid(), url, description: desc, createdAt: Date.now() });
+      data[sub].push(situationRecord);
     }
 
     await setSituations(reportId, data);
+    return true;
+  }
+
+  function renderDraftList(){
+    const section = app.querySelector('#draft-section');
+    const listEl = app.querySelector('#draft-list');
+    if(!drafts.length){
+      section.style.display = 'none';
+      listEl.innerHTML = '';
+      return;
+    }
+    section.style.display = 'block';
+    listEl.innerHTML = drafts.map(d => {
+      const timeLabel = (d.start != null && d.end != null) ? `${formatTime(d.start)}–${formatTime(d.end)}` : 'весь ролик';
+      return `
+      <div class="draft-item" data-id="${d.id}">
+        <div class="seg-meta">${timeLabel} <span style="color:var(--muted);">•</span> <a href="${escapeHtml(d.url)}" target="_blank" rel="noopener" style="color:var(--accent-2);">${escapeHtml(d.url)}</a></div>
+        <textarea class="draft-comment-input" id="draft-comment-${d.id}" rows="2" placeholder="Комментарий к отрезку">${escapeHtml(d.comment || '')}</textarea>
+        <div style="display:flex; gap:6px; margin-top:8px;">
+          <button type="button" class="btn solid" style="flex:1; font-size:12.5px; padding:8px 10px;" data-action="draft-confirm" data-id="${d.id}">+ Добавить отрезок</button>
+          <button type="button" class="btn ghost" style="font-size:12.5px; padding:8px 10px;" data-action="draft-discard" data-id="${d.id}">Отменить</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    listEl.querySelectorAll('[data-action="draft-confirm"]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
+        const d = drafts.find(x => x.id === id);
+        if(!d) return;
+        const comment = (app.querySelector(`#draft-comment-${id}`).value || '').trim();
+        segments.push({ id: uid(), url: d.url, start: d.start, end: d.end, comment });
+        drafts = drafts.filter(x => x.id !== id);
+        const ok = await saveSituation();
+        if(ok){
+          showToast(isEdit ? 'Изменения сохранены' : 'Отрезок сохранён — ситуация добавлена');
+          nav({view:'report', id: reportId});
+        } else {
+          renderSegList();
+          renderDraftList();
+        }
+      });
+    });
+    listEl.querySelectorAll('[data-action="draft-discard"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        drafts = drafts.filter(x => x.id !== btn.dataset.id);
+        renderDraftList();
+      });
+    });
+  }
+  renderDraftList();
+  if(prefillDraft){
+    const seedId = prefillDraft.id || drafts[0]?.id;
+    setTimeout(() => {
+      const ta = app.querySelector(`#draft-comment-${seedId}`);
+      if(ta) ta.focus();
+    }, 60);
+  }
+
+  // ---------- Список добавленных отрезков (левая колонка) ----------
+  function renderSegList(){
+    const segListEl = app.querySelector('#seg-list');
+    if(!segments.length){
+      segListEl.innerHTML = `<div class="empty" style="padding:22px 14px;"><p style="margin:0;">Пока не добавлено ни одного отрезка. Выберите видео справа, отметьте начало и конец (или добавьте видео целиком) и нажмите «Добавить отрезок».</p></div>`;
+      return;
+    }
+    segListEl.innerHTML = segments.map(sg => {
+      const timeLabel = (sg.start != null && sg.end != null) ? `${formatTime(sg.start)}–${formatTime(sg.end)}` : 'весь ролик';
+      return `
+      <div class="seg-item">
+        <button type="button" class="icon-btn danger seg-remove" title="Удалить отрезок" data-action="remove-segment" data-id="${sg.id}">✕</button>
+        <div class="seg-meta">${timeLabel} <span style="color:var(--muted);">•</span> <a href="${escapeHtml(sg.url)}" target="_blank" rel="noopener" style="color:var(--accent-2);">${escapeHtml(sg.url)}</a></div>
+        <div class="seg-comment">${sg.comment ? escapeHtml(sg.comment) : '<span style="color:var(--muted);">без комментария</span>'}</div>
+      </div>`;
+    }).join('');
+    segListEl.querySelectorAll('[data-action="remove-segment"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        segments = segments.filter(sg => sg.id !== btn.dataset.id);
+        renderSegList();
+      });
+    });
+  }
+  renderSegList();
+
+  // ---------- Панель видео справа: все плееры грузятся сразу при открытии ----------
+  const libState = {}; // idx -> {player, start, pendingEnd}
+
+  function resetLibSelection(idx){
+    const st = libState[idx];
+    if(st){ st.start = null; st.pendingEnd = null; }
+    const tcBtn = app.querySelector(`#lib-tc-btn-${idx}`);
+    if(tcBtn){ tcBtn.innerHTML = '<span>⏱</span> Отметить начало'; tcBtn.classList.remove('active'); tcBtn.disabled = !(st && st.player); }
+  }
+
+  function initLibPlayer(idx, url){
+    const vid = youtubeId(url);
+    const playerHost = app.querySelector(`#lib-player-${idx}`);
+    if(!playerHost) return;
+
+    if(!vid){
+      playerHost.innerHTML = `<div class="placeholder"><div class="glyph">⚠️</div><div>Некорректная ссылка</div></div>`;
+      return;
+    }
+    if(typeof YT === 'undefined' || typeof YT.Player === 'undefined'){
+      playerHost.innerHTML = `<div class="placeholder"><div class="glyph">⚠️</div><div>YouTube API не загружен</div></div>`;
+      return;
+    }
+
+    playerHost.innerHTML = '';
+    libState[idx] = libState[idx] || {};
+    libState[idx].start = null;
+    libState[idx].pendingEnd = null;
+    resetLibSelection(idx);
+
+    try{
+      const player = new YT.Player(`lib-player-${idx}`, {
+        height: '100%', width: '100%', videoId: vid,
+        playerVars: { playsinline: 1, modestbranding: 1, rel: 0 },
+        events: {
+          onReady: function(){
+            const tcBtn = app.querySelector(`#lib-tc-btn-${idx}`);
+            if(tcBtn) tcBtn.disabled = false;
+            const fullBtn = app.querySelector(`#lib-full-${idx}`);
+            if(fullBtn) fullBtn.disabled = false;
+          },
+          onError: function(e){ console.warn('YT lib error', e.data); }
+        }
+      });
+      libState[idx].player = player;
+      libPlayers.push(player);
+    }catch(e){
+      console.error('YT lib init error', e);
+      playerHost.innerHTML = `<div class="placeholder"><div class="glyph">⚠️</div><div>Ошибка инициализации плеера</div></div>`;
+    }
+  }
+
+  // Грузим плееры для всех видео из списка разом, как только API готово
+  whenYTReady(() => {
+    library.forEach((item, idx) => initLibPlayer(idx, item.url));
+  });
+
+  library.forEach((item, idx) => {
+    const tcBtn = app.querySelector(`#lib-tc-btn-${idx}`);
+    const fullBtn = app.querySelector(`#lib-full-${idx}`);
+    if(!tcBtn) return;
+    tcBtn.addEventListener('click', () => {
+      const st = libState[idx];
+      if(!st || !st.player || typeof st.player.getCurrentTime !== 'function'){
+        showToast('Плеер ещё не готов');
+        return;
+      }
+      const currentTime = st.player.getCurrentTime();
+      if(st.start == null){
+        st.start = currentTime;
+        tcBtn.innerHTML = `<span>⏱</span> Начало: ${formatTime(currentTime)}. Отметить конец`;
+        tcBtn.classList.add('active');
+      } else {
+        const start = Math.min(st.start, currentTime);
+        const end = Math.max(st.start, currentTime);
+        drafts.push({ id: uid(), url: item.url, start, end, comment: '' });
+        renderDraftList();
+        showToast('Добавлено в черновики — впишите комментарий слева');
+        resetLibSelection(idx);
+      }
+    });
+
+    if(fullBtn){
+      fullBtn.addEventListener('click', () => {
+        drafts.push({ id: uid(), url: item.url, start: null, end: null, comment: '' });
+        renderDraftList();
+        showToast('Добавлено в черновики — впишите комментарий слева');
+      });
+    }
+  });
+
+  app.querySelectorAll('[data-action="sf-toggle-check"]').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const idx = parseInt(btn.dataset.idx, 10);
+      const current = await getVideoLibrary(reportId);
+      if(!current[idx]) return;
+      current[idx].checked = !current[idx].checked;
+      await setVideoLibrary(reportId, current);
+      library[idx].checked = current[idx].checked;
+      const itemEl = btn.closest('.lib-item');
+      if(itemEl) itemEl.classList.toggle('is-checked', current[idx].checked);
+      btn.classList.toggle('checked', current[idx].checked);
+      btn.textContent = current[idx].checked ? '✓ Проверено' : 'Проверить';
+      showToast(current[idx].checked ? 'Видео отмечено как проверенное' : 'Отметка снята');
+    });
+  });
+
+  // Save Logic
+  app.querySelector('[data-action="save-form"]').addEventListener('click', async () => {
+    if(drafts.length){
+      showToast('Завершите черновики слева: добавьте или отмените');
+      return;
+    }
+    const ok = await saveSituation();
+    if(!ok) return;
     showToast(isEdit ? 'Изменения сохранены' : 'Ситуация добавлена');
-    nav({view:'section', id: reportId, sub: sub});
+    nav({view:'report', id: reportId});
   });
 }
+
 
 // ---------- shared nav binder ----------
 function bindNavHandlers(){
